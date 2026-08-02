@@ -18,13 +18,14 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
-    public ProductResponse createProduct(
-            @Valid @RequestBody ProductRequest request) {
+   @PostMapping
+public ProductResponse createProduct(
+        @Valid @RequestBody ProductRequest request) {
 
-        return productService.createProduct(request);
-    }
+    System.out.println(">>> createProduct() reached");
 
+    return productService.createProduct(request);
+}
     @GetMapping
     public List<ProductResponse> getAllProducts() {
 
@@ -50,4 +51,5 @@ public class ProductController {
 
         return productService.deleteProduct(id);
     }
+    
 }
