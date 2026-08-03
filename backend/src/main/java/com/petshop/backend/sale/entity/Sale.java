@@ -19,6 +19,14 @@ public class Sale {
 
     @Column(nullable = false)
     private Double total;
+    private String paymentStatus;
+
+    private String paymentMethod;
+    private String checkoutRequestId;
+
+    private String mpesaReceipt;
+
+    private String phoneNumber;
 
     @Column(nullable = false)
     private LocalDateTime saleDate;
@@ -52,5 +60,45 @@ public class Sale {
 
     public void setSaleDate(LocalDateTime saleDate) {
         this.saleDate = saleDate;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getCheckoutRequestId() {
+        return checkoutRequestId;
+    }
+
+    public void setCheckoutRequestId(String checkoutRequestId) {
+        this.checkoutRequestId = checkoutRequestId;
+    }
+
+    public String getMpesaReceipt() {
+        return mpesaReceipt;
+    }
+
+    public void setMpesaReceipt(String mpesaReceipt) {
+        this.mpesaReceipt = mpesaReceipt;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

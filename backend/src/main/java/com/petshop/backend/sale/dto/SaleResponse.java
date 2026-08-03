@@ -11,6 +11,13 @@ public class SaleResponse {
     private String customerName;
 
     private Double total;
+    private String paymentStatus;
+
+    private String paymentMethod;
+
+    private String mpesaReceipt;
+
+    private String phoneNumber;
 
     private LocalDateTime saleDate;
 
@@ -49,6 +56,38 @@ public class SaleResponse {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getMpesaReceipt() {
+        return mpesaReceipt;
+    }
+
+    public void setMpesaReceipt(String mpesaReceipt) {
+        this.mpesaReceipt = mpesaReceipt;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public LocalDateTime getSaleDate() {
