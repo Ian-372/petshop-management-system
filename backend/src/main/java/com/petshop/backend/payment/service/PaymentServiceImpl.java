@@ -6,43 +6,54 @@ import com.petshop.backend.payment.util.MpesaUtil;
 import com.petshop.backend.sale.entity.Sale;
 import com.petshop.backend.sale.repository.SaleRepository;
 import org.springframework.stereotype.Service;
+import com.petshop.backend.product.entity.Product;
+import com.petshop.backend.product.repository.ProductRepository;
+import com.petshop.backend.sale.entity.SaleItem;
+import com.petshop.backend.sale.repository.SaleItemRepository;
+import java.util.List;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
         private final SaleRepository saleRepository;
+        private final SaleItemRepository saleItemRepository;
+        private final ProductRepository productRepository;
         private final MpesaUtil mpesaUtil;
 
         public PaymentServiceImpl(
                         SaleRepository saleRepository,
+                        SaleItemRepository saleItemRepository,
+                        ProductRepository productRepository,
                         MpesaUtil mpesaUtil) {
+
                 this.saleRepository = saleRepository;
+                this.saleItemRepository = saleItemRepository;
+                this.productRepository = productRepository;
                 this.mpesaUtil = mpesaUtil;
         }
-
         @Override
-        public String initiateStkPush(StkPushRequest request) {
+public String initiateStkPush(StkPushRequest request) {
 
-                Sale sale = saleRepository.findById(request.getSaleId())
-                                .orElseThrow(() -> new RuntimeException("Sale not found."));
+    Sale sale = saleRepository.findById(request.getSaleId())
+            .orElseThrow(() -> new RuntimeException("Sale not found."));
 
-                sale.setPhoneNumber(request.getPhoneNumber());
-                sale.setPaymentMethod("MPESA");
-                sale.setPaymentStatus("PENDING");
+    sale.setPhoneNumber(request.getPhoneNumber());
+    sale.setPaymentMethod("MPESA");
+    sale.setPaymentStatus("PENDING");
 
-                saleRepository.save(sale);
+    saleRepository.save(sale);
 
-                String checkoutRequestId = mpesaUtil.sendStkPush(
-                                sale.getId(),
-                                request.getPhoneNumber(),
-                                sale.getTotal());
+    String checkoutRequestId = mpesaUtil.sendStkPush(
+            sale.getId(),
+            request.getPhoneNumber(),
+            sale.getTotal());
 
-                sale.setCheckoutRequestId(checkoutRequestId);
+    sale.setCheckoutRequestId(checkoutRequestId);
 
-                saleRepository.save(sale);
+    saleRepository.save(sale);
 
-                return checkoutRequestId;
-        }
+    return checkoutRequestId;
+}
 
         @Override
         public void handleCallback(CallbackRequest request) {
@@ -77,7 +88,22 @@ public class PaymentServiceImpl implements PaymentService {
                                 });
 
                         }
+                        List<SaleItem> saleItems = saleItemRepository.findBySale(sale);
 
+                        for (SaleItem saleItem : saleItems) {
+
+                                Product product = saleItem.getProduct();
+
+                                if (product.getQuantity() < saleItem.getQuantity()) {
+                                        throw new RuntimeException(
+                                                        "Insufficient stock for " + product.getName());
+                                }
+
+                                product.setQuantity(
+                                                product.getQuantity() - saleItem.getQuantity());
+
+                                productRepository.save(product);
+                        }
                 } else {
 
                         sale.setPaymentStatus("FAILED");
