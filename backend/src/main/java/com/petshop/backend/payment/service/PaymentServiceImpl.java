@@ -10,71 +10,83 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    private final SaleRepository saleRepository;
-    private final MpesaUtil mpesaUtil;
+        private final SaleRepository saleRepository;
+        private final MpesaUtil mpesaUtil;
 
-    public PaymentServiceImpl(
-            SaleRepository saleRepository,
-            MpesaUtil mpesaUtil) {
-        this.saleRepository = saleRepository;
-        this.mpesaUtil = mpesaUtil;
-    }
+        public PaymentServiceImpl(
+                        SaleRepository saleRepository,
+                        MpesaUtil mpesaUtil) {
+                this.saleRepository = saleRepository;
+                this.mpesaUtil = mpesaUtil;
+        }
 
-    @Override
-    public String initiateStkPush(StkPushRequest request) {
+        @Override
+        public String initiateStkPush(StkPushRequest request) {
 
-        Sale sale = saleRepository.findById(request.getSaleId())
-                .orElseThrow(() -> new RuntimeException("Sale not found."));
+                Sale sale = saleRepository.findById(request.getSaleId())
+                                .orElseThrow(() -> new RuntimeException("Sale not found."));
 
-        sale.setPhoneNumber(request.getPhoneNumber());
-        sale.setPaymentMethod("MPESA");
-        sale.setPaymentStatus("PENDING");
+                sale.setPhoneNumber(request.getPhoneNumber());
+                sale.setPaymentMethod("MPESA");
+                sale.setPaymentStatus("PENDING");
 
-        saleRepository.save(sale);
+                saleRepository.save(sale);
 
-        return mpesaUtil.sendStkPush(
-                sale.getId(),
-                request.getPhoneNumber(),
-                sale.getTotal());
-    }
+                String checkoutRequestId = mpesaUtil.sendStkPush(
+                                sale.getId(),
+                                request.getPhoneNumber(),
+                                sale.getTotal());
 
-   @Override
-public void handleCallback(CallbackRequest request) {
+                sale.setCheckoutRequestId(checkoutRequestId);
 
-    CallbackRequest.StkCallback callback =
-            request.getBody().getStkCallback();
+                saleRepository.save(sale);
 
-    System.out.println("========== MPESA CALLBACK ==========");
+                return checkoutRequestId;
+        }
 
-    System.out.println("MerchantRequestID : "
-            + callback.getMerchantRequestID());
+        @Override
+        public void handleCallback(CallbackRequest request) {
 
-    System.out.println("CheckoutRequestID : "
-            + callback.getCheckoutRequestID());
+                CallbackRequest.StkCallback callback = request.getBody().getStkCallback();
 
-    System.out.println("ResultCode : "
-            + callback.getResultCode());
+                Sale sale = saleRepository
+                                .findByCheckoutRequestId(callback.getCheckoutRequestID())
+                                .orElseThrow(() -> new RuntimeException("Sale not found."));
 
-    System.out.println("ResultDesc : "
-            + callback.getResultDesc());
+                sale.setCheckoutRequestId(callback.getCheckoutRequestID());
 
-    if (callback.getCallbackMetadata() != null) {
+                if (callback.getResultCode() == 0) {
 
-        callback.getCallbackMetadata()
-                .getItem()
-                .forEach(item ->
+                        sale.setPaymentStatus("COMPLETED");
 
-                        System.out.println(
-                                item.getName()
-                                        + " = "
-                                        + item.getValue()
-                        )
+                        if (callback.getCallbackMetadata() != null) {
 
-                );
+                                callback.getCallbackMetadata().getItem().forEach(item -> {
 
-    }
+                                        switch (item.getName()) {
 
-    System.out.println("====================================");
+                                                case "MpesaReceiptNumber":
+                                                        sale.setMpesaReceipt(item.getValue().toString());
+                                                        break;
 
-}
+                                                case "PhoneNumber":
+                                                        sale.setPhoneNumber(item.getValue().toString());
+                                                        break;
+                                        }
+
+                                });
+
+                        }
+
+                } else {
+
+                        sale.setPaymentStatus("FAILED");
+
+                }
+
+                saleRepository.save(sale);
+
+                System.out.println("Payment updated successfully.");
+
+        }
 }

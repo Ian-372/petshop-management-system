@@ -7,7 +7,7 @@ public class StkPushRequest {
 
     @NotNull
     private Long saleId;
-
+ 
     @NotBlank
     private String phoneNumber;
 
