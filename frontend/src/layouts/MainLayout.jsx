@@ -1,7 +1,8 @@
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import { Outlet } from "react-router-dom";
 
-export default function MainLayout({ children }) {
+export default function MainLayout() {
 
     return (
 
@@ -11,7 +12,7 @@ export default function MainLayout({ children }) {
 
             <Sidebar />
 
-            {/* Main Section */}
+            {/* Main Content */}
 
             <div className="flex-1 flex flex-col">
 
@@ -19,11 +20,11 @@ export default function MainLayout({ children }) {
 
                 <Navbar />
 
-                {/* Page Content */}
+                {/* Page */}
 
                 <main className="flex-1 p-8 overflow-auto">
 
-                    {children}
+                    <Outlet />
 
                 </main>
 

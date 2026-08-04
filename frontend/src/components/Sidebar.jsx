@@ -1,4 +1,5 @@
 import {
+
     FaChartPie,
     FaBoxOpen,
     FaShoppingCart,
@@ -6,23 +7,76 @@ import {
     FaTruck,
     FaFileAlt,
     FaCog
+
 } from "react-icons/fa";
 
+import { NavLink } from "react-router-dom";
+
 const menuItems = [
-    { name: "Dashboard", icon: <FaChartPie /> },
-    { name: "Products", icon: <FaBoxOpen /> },
-    { name: "Sales", icon: <FaShoppingCart /> },
-    { name: "Customers", icon: <FaUsers /> },
-    { name: "Suppliers", icon: <FaTruck /> },
-    { name: "Reports", icon: <FaFileAlt /> },
-    { name: "Settings", icon: <FaCog /> }
+
+    {
+
+        name: "Dashboard",
+        path: "/",
+        icon: <FaChartPie />
+
+    },
+
+    {
+
+        name: "Products",
+        path: "/products",
+        icon: <FaBoxOpen />
+
+    },
+
+    {
+
+        name: "Sales",
+        path: "/sales",
+        icon: <FaShoppingCart />
+
+    },
+
+    {
+
+        name: "Customers",
+        path: "/customers",
+        icon: <FaUsers />
+
+    },
+
+    {
+
+        name: "Suppliers",
+        path: "/suppliers",
+        icon: <FaTruck />
+
+    },
+
+    {
+
+        name: "Reports",
+        path: "/reports",
+        icon: <FaFileAlt />
+
+    },
+
+    {
+
+        name: "Settings",
+        path: "/settings",
+        icon: <FaCog />
+
+    }
+
 ];
 
 export default function Sidebar() {
 
     return (
 
-        <aside className="w-64 bg-slate-900 text-white h-screen">
+        <aside className="w-64 bg-slate-900 text-white min-h-screen">
 
             <div className="text-2xl font-bold p-6 border-b border-slate-700">
 
@@ -32,28 +86,45 @@ export default function Sidebar() {
 
             <nav className="mt-6">
 
-                {menuItems.map((item) => (
+                {
 
-                    <button
-                        key={item.name}
-                        className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-800 transition"
-                    >
+                    menuItems.map((item) => (
 
-                        <span className="text-lg">
+                        <NavLink
 
-                            {item.icon}
+                            key={item.name}
 
-                        </span>
+                            to={item.path}
 
-                        <span>
+                            className={({ isActive }) =>
 
-                            {item.name}
+                                `flex items-center gap-4 px-6 py-4 transition ${
+                                    isActive
+                                        ? "bg-blue-600"
+                                        : "hover:bg-slate-800"
+                                }`
 
-                        </span>
+                            }
 
-                    </button>
+                        >
 
-                ))}
+                            <span className="text-lg">
+
+                                {item.icon}
+
+                            </span>
+
+                            <span>
+
+                                {item.name}
+
+                            </span>
+
+                        </NavLink>
+
+                    ))
+
+                }
 
             </nav>
 
