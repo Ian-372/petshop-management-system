@@ -2,6 +2,7 @@ package com.petshop.backend.customer.entity;
 
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -59,4 +60,22 @@ public class Customer {
     public void setAddress(String address) {
         this.address = address;
     }
+    private Integer loyaltyPoints = 0;
+
+private Double totalSpent = 0.0;
+public Integer getLoyaltyPoints() {
+    return loyaltyPoints;
+}
+
+public void setLoyaltyPoints(Integer loyaltyPoints) {
+    this.loyaltyPoints = loyaltyPoints;
+}
+
+public Double getTotalSpent() {
+    return totalSpent;
+}
+
+public void setTotalSpent(Double totalSpent) {
+    this.totalSpent = totalSpent;
+}
 }
