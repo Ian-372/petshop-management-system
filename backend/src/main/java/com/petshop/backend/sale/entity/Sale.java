@@ -19,15 +19,20 @@ public class Sale {
 
     @Column(nullable = false)
     private Double total;
+
     private String paymentStatus;
 
     private String paymentMethod;
+
     private String checkoutRequestId;
 
     private String mpesaReceipt;
 
     private String phoneNumber;
 
+    // NEW FIELD
+    @Column(name = "loyalty_awarded", nullable = false)
+    private Boolean loyaltyAwarded = false;
     @Column(nullable = false)
     private LocalDateTime saleDate;
 
@@ -100,5 +105,15 @@ public class Sale {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    // NEW GETTER
+    public Boolean getLoyaltyAwarded() {
+        return loyaltyAwarded;
+    }
+
+    // NEW SETTER
+    public void setLoyaltyAwarded(Boolean loyaltyAwarded) {
+        this.loyaltyAwarded = loyaltyAwarded;
     }
 }

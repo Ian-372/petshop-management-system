@@ -37,8 +37,7 @@ public class LoyaltyServiceImpl implements LoyaltyService {
                 customer.getId(),
                 customer.getName(),
                 customer.getLoyaltyPoints(),
-                customer.getTotalSpent()
-        );
+                customer.getTotalSpent());
     }
 
     @Override
@@ -48,15 +47,18 @@ public class LoyaltyServiceImpl implements LoyaltyService {
         Sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found."));
 
+        if (Boolean.TRUE.equals(sale.getLoyaltyAwarded())) {
+            throw new RuntimeException("Loyalty points already awarded.");
+        }
+
         Customer customer = sale.getCustomer();
 
         if (customer == null) {
             throw new RuntimeException("Sale has no customer.");
         }
 
-        int earnedPoints =
-                loyaltyPointCalculator.calculatePoints(
-                        sale.getTotal());
+        int earnedPoints = loyaltyPointCalculator.calculatePoints(
+                sale.getTotal());
 
         customer.setLoyaltyPoints(
                 customer.getLoyaltyPoints() + earnedPoints);
@@ -66,12 +68,28 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 
         customerRepository.save(customer);
 
+        System.out.println("========== LOYALTY DEBUG ==========");
+        System.out.println("Sale ID: " + sale.getId());
+        System.out.println("Before: " + sale.getLoyaltyAwarded());
+
+        sale.setLoyaltyAwarded(true);
+
+        System.out.println("After set: " + sale.getLoyaltyAwarded());
+
+        Sale savedSale = saleRepository.saveAndFlush(sale);
+
+        System.out.println("Saved entity value: " + savedSale.getLoyaltyAwarded());
+
+        Sale check = saleRepository.findById(sale.getId()).orElseThrow();
+
+        System.out.println("Reloaded from DB: " + check.getLoyaltyAwarded());
+        System.out.println("==================================");
+
         return new LoyaltyResponse(
                 customer.getId(),
                 customer.getName(),
                 customer.getLoyaltyPoints(),
-                customer.getTotalSpent()
-        );
+                customer.getTotalSpent());
     }
 
     @Override
@@ -96,7 +114,6 @@ public class LoyaltyServiceImpl implements LoyaltyService {
                 customer.getId(),
                 customer.getName(),
                 customer.getLoyaltyPoints(),
-                customer.getTotalSpent()
-        );
+                customer.getTotalSpent());
     }
 }
