@@ -30,6 +30,7 @@ export default function Login() {
 
             });
 
+            localStorage.removeItem("token");
             localStorage.setItem("token", response.data.token);
 
             navigate("/");

@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader";
 import PrimaryButton from "../components/PrimaryButton";
 import SearchBar from "../components/SearchBar";
 import AddCustomerModal from "../components/AddCustomerModal";
-
+import ViewCustomerModal from "../components/ViewCustomerModal";
 
 export default function Customers() {
 
@@ -15,11 +15,13 @@ export default function Customers() {
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [showProfile, setShowProfile] = useState(false);
+    const [profileCustomerId, setProfileCustomerId] = useState(null);
 
     useEffect(() => {
 
         loadCustomers();
-        
+
 
     }, []);
 
@@ -42,35 +44,35 @@ export default function Customers() {
     }
     async function deleteCustomer(id) {
 
-    const confirmed = window.confirm(
+        const confirmed = window.confirm(
 
-        "Are you sure you want to delete this customer?"
+            "Are you sure you want to delete this customer?"
 
-    );
+        );
 
-    if (!confirmed) {
+        if (!confirmed) {
 
-        return;
+            return;
+
+        }
+
+        try {
+
+            await api.delete(`/customers/${id}`);
+
+            loadCustomers();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            alert("Unable to delete customer.");
+
+        }
 
     }
-
-    try {
-
-        await api.delete(`/customers/${id}`);
-
-        loadCustomers();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert("Unable to delete customer.");
-
-    }
-
-}
 
     const filteredCustomers = customers.filter(customer =>
 
@@ -211,7 +213,17 @@ export default function Customers() {
                                         <td className="text-center p-4">
 
                                             <button
+
                                                 className="text-blue-600 hover:underline mr-3"
+
+                                                onClick={() => {
+
+                                                    setProfileCustomerId(customer.id);
+
+                                                    setShowProfile(true);
+
+                                                }}
+
                                             >
 
                                                 View
@@ -278,6 +290,21 @@ export default function Customers() {
                 }}
 
                 onSaved={loadCustomers}
+
+            />
+            <ViewCustomerModal
+
+                open={showProfile}
+
+                customerId={profileCustomerId}
+
+                onClose={() => {
+
+                    setShowProfile(false);
+
+                    setProfileCustomerId(null);
+
+                }}
 
             />
 

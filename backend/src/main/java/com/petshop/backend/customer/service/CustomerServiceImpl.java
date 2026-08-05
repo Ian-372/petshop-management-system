@@ -11,6 +11,7 @@ import com.petshop.backend.sale.entity.SaleItem;
 import com.petshop.backend.sale.repository.SaleItemRepository;
 import com.petshop.backend.sale.repository.SaleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerServiceImpl(
             CustomerRepository customerRepository,
             SaleRepository saleRepository,
-            SaleItemRepository saleItemRepository
-    ) {
+            SaleItemRepository saleItemRepository) {
         this.customerRepository = customerRepository;
         this.saleRepository = saleRepository;
         this.saleItemRepository = saleItemRepository;
@@ -97,6 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerProfileResponse getCustomerProfile(Long id) {
 
         Customer customer = customerRepository.findById(id)
@@ -133,11 +134,9 @@ public class CustomerServiceImpl implements CustomerService {
 
             List<String> items = saleItemRepository.findBySale(sale)
                     .stream()
-                    .map(item ->
-                            item.getProduct().getName()
-                                    + " × "
-                                    + item.getQuantity()
-                    )
+                    .map(item -> item.getProduct().getName()
+                            + " × "
+                            + item.getQuantity())
                     .collect(Collectors.toList());
 
             saleResponse.setItems(items);
