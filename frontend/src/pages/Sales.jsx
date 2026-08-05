@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../services/api";
-
+import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import SearchBar from "../components/SearchBar";
 import SaleCartItem from "../components/SaleCartItem";
@@ -21,6 +21,7 @@ export default function Sales() {
     const [phoneNumber, setPhoneNumber] = useState("");
 
     const [paymentMethod, setPaymentMethod] = useState("CASH");
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -93,7 +94,8 @@ export default function Sales() {
 
                 alert("STK Push sent to customer.");
 
-            } else {
+            }
+            else {
 
                 await api.post(`/payments/cash/${sale.id}`);
 
@@ -101,7 +103,16 @@ export default function Sales() {
 
             }
 
+            // ============================
+            // OPEN RECEIPT
+            // ============================
+
+            navigate(`/receipt/${sale.id}`);
+
+            // ============================
+
             setCart([]);
+
             setCustomerName("");
 
             setPhoneNumber("");

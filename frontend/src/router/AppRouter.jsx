@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login";
-
+import Receipt from "../pages/Receipt";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Customers from "../pages/Customers";
@@ -51,6 +51,7 @@ export default function AppRouter() {
                     <Route path="stock" element={<Stock />} />
 
                     <Route path="sales" element={<Sales />} />
+                    <Route path="receipt/:saleId" element={<Receipt />} />
 
                     <Route path="reports" element={<Reports />} />
 

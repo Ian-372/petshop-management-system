@@ -57,6 +57,7 @@ response.setReceiptNumber(receiptNumber);
 
         response.setPaymentMethod(sale.getPaymentMethod());
         response.setPaymentStatus(sale.getPaymentStatus());
+        response.setPhoneNumber(sale.getPhoneNumber());
         response.setMpesaReceipt(sale.getMpesaReceipt());
         response.setTotal(sale.getTotal());
 

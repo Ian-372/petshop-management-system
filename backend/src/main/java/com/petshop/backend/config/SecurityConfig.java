@@ -6,13 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,17 +44,16 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-        List.of(
+        configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "http://localhost:8080"
         ));
 
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        configuration.setAllowedHeaders(
-                List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
 
         configuration.setAllowCredentials(true);
 
@@ -76,12 +74,31 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
+                        // OPTIONS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Public API
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/payments/callback")
-                        .permitAll()
-                        .anyRequest().authenticated())
+                                "/api/payments/callback",
+                                "/api/receipts/**"
+                        ).permitAll()
+
+                        // Static resources
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/receipt.html",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico"
+                        ).permitAll()
+
+                        // Everything else requires JWT
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);

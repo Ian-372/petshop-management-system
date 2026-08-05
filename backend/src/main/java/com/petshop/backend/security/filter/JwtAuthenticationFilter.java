@@ -44,29 +44,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         System.out.println("Authorization Header = " + authHeader);
         String token = authHeader.substring(7);
-        String username = jwtService.extractUsername(token);
 
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            String username = jwtService.extractUsername(token);
 
-            if (jwtService.isTokenValid(token, userDetails.getUsername())) {
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+                if (jwtService.isTokenValid(token, userDetails.getUsername())) {
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
+
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request));
+
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authentication);
+                }
             }
-        }
 
+        } catch (Exception e) {
+
+            SecurityContextHolder.clearContext();
+
+            filterChain.doFilter(request, response);
+
+            return;
+        }
         filterChain.doFilter(request, response);
     }
 }

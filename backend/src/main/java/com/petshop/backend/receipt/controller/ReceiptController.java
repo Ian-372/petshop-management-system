@@ -1,5 +1,6 @@
 package com.petshop.backend.receipt.controller;
 
+import com.petshop.backend.receipt.dto.PrintableReceiptResponse;
 import com.petshop.backend.receipt.dto.ReceiptResponse;
 import com.petshop.backend.receipt.service.ReceiptService;
 import org.springframework.web.bind.annotation.*;
@@ -19,5 +20,12 @@ public class ReceiptController {
             @PathVariable Long saleId) {
 
         return receiptService.getReceipt(saleId);
+    }
+
+    @GetMapping("/{saleId}/print")
+    public PrintableReceiptResponse getPrintableReceipt(
+            @PathVariable Long saleId) {
+
+        return receiptService.getPrintableReceipt(saleId);
     }
 }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Receipt</title>
+
+    <link rel="stylesheet" href="css/receipt.css">
+
+</head>
+
+<body>
+
+<div id="receipt">
+
+    <h2 id="shopName">Pet Shop</h2>
+
+    <p id="shopAddress"></p>
+
+    <p id="shopPhone"></p>
+
+    <hr>
+
+    <p><strong>Receipt No:</strong> <span id="receiptNumber"></span></p>
+
+    <p><strong>Sale ID:</strong> <span id="saleId"></span></p>
+
+    <p><strong>Date:</strong> <span id="saleDate"></span></p>
+
+    <hr>
+
+    <p><strong>Customer:</strong> <span id="customerName"></span></p>
+
+    <p><strong>Phone:</strong> <span id="phoneNumber"></span></p>
+
+    <hr>
+
+    <table>
+
+        <thead>
+
+        <tr>
+
+            <th>Item</th>
+
+            <th>Qty</th>
+
+            <th>Price</th>
+
+            <th>Total</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody id="itemsTable">
+
+        </tbody>
+
+    </table>
+
+    <hr>
+
+    <p><strong>Payment:</strong> <span id="paymentMethod"></span></p>
+
+    <p><strong>Status:</strong> <span id="paymentStatus"></span></p>
+
+    <p id="mpesaRow" style="display:none;">
+        <strong>M-Pesa Ref:</strong>
+        <span id="mpesaReceipt"></span>
+    </p>
+
+    <hr>
+
+    <h3>Total: KES <span id="total"></span></h3>
+
+    <button onclick="window.print()">
+
+        Print Receipt
+
+    </button>
+
+</div>
+
+<script type="module" src="js/receipt.js"></script>
+
+</body>
+
+</html>
