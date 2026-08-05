@@ -2,6 +2,7 @@ package com.petshop.backend.customer.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customers")
@@ -14,13 +15,21 @@ public class Customer {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String phone;
 
     @Column(unique = true)
     private String email;
 
     private String address;
+
+    @Column(nullable = false)
+    private Integer loyaltyPoints = 0;
+
+    @Column(nullable = false)
+    private Double totalSpent = 0.0;
+
+    private LocalDateTime lastPurchaseDate;
 
     public Customer() {
     }
@@ -46,7 +55,7 @@ public class Customer {
     }
 
     public String getEmail() {
-        return email;
+        return email == null ? "-" : email;
     }
 
     public void setEmail(String email) {
@@ -54,28 +63,34 @@ public class Customer {
     }
 
     public String getAddress() {
-        return address;
+        return address == null ? "-" : address;
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
-    private Integer loyaltyPoints = 0;
 
-private Double totalSpent = 0.0;
-public Integer getLoyaltyPoints() {
-    return loyaltyPoints;
-}
+    public Integer getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
 
-public void setLoyaltyPoints(Integer loyaltyPoints) {
-    this.loyaltyPoints = loyaltyPoints;
-}
+    public void setLoyaltyPoints(Integer loyaltyPoints) {
+        this.loyaltyPoints = loyaltyPoints;
+    }
 
-public Double getTotalSpent() {
-    return totalSpent;
-}
+    public Double getTotalSpent() {
+        return totalSpent;
+    }
 
-public void setTotalSpent(Double totalSpent) {
-    this.totalSpent = totalSpent;
-}
+    public void setTotalSpent(Double totalSpent) {
+        this.totalSpent = totalSpent;
+    }
+
+    public LocalDateTime getLastPurchaseDate() {
+        return lastPurchaseDate;
+    }
+
+    public void setLastPurchaseDate(LocalDateTime lastPurchaseDate) {
+        this.lastPurchaseDate = lastPurchaseDate;
+    }
 }

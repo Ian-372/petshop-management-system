@@ -14,11 +14,14 @@ export default function Sales() {
     const [cart, setCart] = useState([]);
 
     const [search, setSearch] = useState("");
-    const [customerId, setCustomerId] = useState("");
+    const [customerType, setCustomerType] = useState("REGISTERED");
+
+    const [customerName, setCustomerName] = useState("");
+
+    const [phoneNumber, setPhoneNumber] = useState("");
 
     const [paymentMethod, setPaymentMethod] = useState("CASH");
 
-    const [phoneNumber, setPhoneNumber] = useState("");
 
     useEffect(() => {
 
@@ -57,7 +60,13 @@ export default function Sales() {
 
             const request = {
 
-                customerId: customerId || null,
+                customerType,
+
+                customerName,
+
+                phoneNumber,
+
+                paymentMethod,
 
                 items: cart.map(item => ({
 
@@ -93,8 +102,12 @@ export default function Sales() {
             }
 
             setCart([]);
-            setCustomerId("");
+            setCustomerName("");
+
             setPhoneNumber("");
+
+            setCustomerType("REGISTERED");
+
             loadProducts();
 
         }
@@ -335,29 +348,91 @@ export default function Sales() {
 
                         <div>
 
-                            <label className="font-semibold">
+                            <div>
 
-                                Customer ID
+                                <label className="font-semibold">
 
-                            </label>
+                                    Customer Type
 
-                            <input
+                                </label>
 
-                                type="number"
+                                <select
 
-                                value={customerId}
+                                    className="w-full border rounded-lg p-3 mt-2"
 
-                                onChange={(e) =>
+                                    value={customerType}
 
-                                    setCustomerId(e.target.value)
+                                    onChange={(e) => setCustomerType(e.target.value)}
 
-                                }
+                                >
 
-                                placeholder="Leave empty for walk-in"
+                                    <option value="REGISTERED">
 
-                                className="w-full border rounded-lg p-3 mt-2"
+                                        Registered Customer
 
-                            />
+                                    </option>
+
+                                    <option value="WALK_IN">
+
+                                        Walk-In Customer
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div>
+
+                                <label className="font-semibold">
+
+                                    Customer Name
+
+                                </label>
+
+                                <input
+
+                                    value={customerName}
+
+                                    onChange={(e) => setCustomerName(e.target.value)}
+
+                                    placeholder={
+
+                                        customerType === "REGISTERED"
+
+                                            ? "Customer Name"
+
+                                            : "Optional"
+
+                                    }
+
+                                    className="w-full border rounded-lg p-3 mt-2"
+
+                                />
+
+                            </div>
+
+                            <div>
+
+                                <label className="font-semibold">
+
+                                    Phone Number
+
+                                </label>
+
+                                <input
+
+                                    value={phoneNumber}
+
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+
+                                    placeholder="2547XXXXXXXX"
+
+                                    className="w-full border rounded-lg p-3 mt-2"
+
+                                />
+
+                            </div>
 
                         </div>
 

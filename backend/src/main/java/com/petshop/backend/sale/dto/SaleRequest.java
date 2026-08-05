@@ -4,30 +4,41 @@ import java.util.List;
 
 public class SaleRequest {
 
-    private Long customerId;
-    private String paymentMethod;
+    private String customerType;
 
-    private String phoneNumber;
+     private String phoneNumber;
+
+    private String customerName;
+
+    private String paymentMethod;
 
     private List<SaleItemRequest> items;
 
     public SaleRequest() {
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public String getCustomerType() {
+        return customerType;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
     }
 
-    public List<SaleItemRequest> getItems() {
-        return items;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setItems(List<SaleItemRequest> items) {
-        this.items = items;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getPaymentMethod() {
@@ -38,11 +49,12 @@ public class SaleRequest {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+
+    public List<SaleItemRequest> getItems() {
+        return items;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setItems(List<SaleItemRequest> items) {
+        this.items = items;
     }
 }

@@ -12,6 +12,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByEmail(String email);
 
+    // NEW
+    boolean existsByPhone(String phone);
+
     long countByLoyaltyPointsGreaterThan(Integer points);
 
     @Query("""

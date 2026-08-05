@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,15 +43,63 @@ public class SaleServiceImpl implements SaleService {
 
         Customer customer = null;
 
-        if (request.getCustomerId() != null) {
+        System.out.println("PHONE RECEIVED = [" + request.getPhoneNumber() + "]");
+        System.out.println("TYPE = " + request.getCustomerType());
 
-            customer = customerRepository.findById(request.getCustomerId())
-                    .orElseThrow(() -> new RuntimeException("Customer not found."));
+        if (request.getPhoneNumber() != null &&
+                !request.getPhoneNumber().isBlank()) {
+
+            Optional<Customer> existingCustomer = customerRepository.findByPhone(request.getPhoneNumber());
+
+            System.out.println("CUSTOMER FOUND = " + existingCustomer.isPresent());
+
+            if (existingCustomer.isPresent()) {
+
+                customer = existingCustomer.get();
+
+            } else {
+
+                customer = new Customer();
+
+                if ("REGISTERED".equalsIgnoreCase(request.getCustomerType())) {
+
+                    customer.setName(request.getCustomerName());
+
+                } else {
+
+                    if (request.getCustomerName() != null &&
+                            !request.getCustomerName().isBlank()) {
+
+                        customer.setName(request.getCustomerName());
+
+                    } else {
+
+                        customer.setName("Walk-In");
+                    }
+                }
+
+                customer.setPhone(request.getPhoneNumber());
+                customer.setEmail(null);
+                customer.setAddress(null);
+                customer.setLoyaltyPoints(0);
+                customer.setTotalSpent(0.0);
+                customer.setLastPurchaseDate(LocalDateTime.now());
+
+                customer = customerRepository.save(customer);
+            }
+
+        } else {
+
+            System.out.println("No phone number supplied. Proceeding as anonymous walk-in.");
+
         }
 
         Sale sale = new Sale();
 
         sale.setCustomer(customer);
+        sale.setPhoneNumber(request.getPhoneNumber());
+        sale.setPaymentMethod(request.getPaymentMethod());
+        sale.setPaymentStatus("PAID");
         sale.setSaleDate(LocalDateTime.now());
 
         double total = 0.0;
@@ -58,27 +107,28 @@ public class SaleServiceImpl implements SaleService {
         for (var itemRequest : request.getItems()) {
 
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found."));
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
 
             if (product.getQuantity() < itemRequest.getQuantity()) {
+
                 throw new RuntimeException(
                         "Insufficient stock for " + product.getName());
             }
 
-            double subtotal = product.getSellingPrice() * itemRequest.getQuantity();
-
-            total += subtotal;
+            total += product.getSellingPrice() * itemRequest.getQuantity();
         }
 
         sale.setTotal(total);
 
         Sale savedSale = saleRepository.save(sale);
+
         for (var itemRequest : request.getItems()) {
 
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found."));
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            product.setQuantity(product.getQuantity() - itemRequest.getQuantity());
+            product.setQuantity(
+                    product.getQuantity() - itemRequest.getQuantity());
 
             productRepository.save(product);
 
@@ -93,6 +143,19 @@ public class SaleServiceImpl implements SaleService {
                     product.getSellingPrice() * itemRequest.getQuantity());
 
             saleItemRepository.save(saleItem);
+        }
+
+        if (customer != null) {
+
+            customer.setTotalSpent(customer.getTotalSpent() + total);
+
+            customer.setLoyaltyPoints(
+                    customer.getLoyaltyPoints()
+                            + (int) (total / 100));
+
+            customer.setLastPurchaseDate(LocalDateTime.now());
+
+            customerRepository.save(customer);
         }
 
         return mapToResponse(savedSale, "Sale completed successfully.");
@@ -121,12 +184,22 @@ public class SaleServiceImpl implements SaleService {
         SaleResponse response = new SaleResponse();
 
         response.setId(sale.getId());
+
         if (sale.getCustomer() != null) {
 
             response.setCustomerId(sale.getCustomer().getId());
             response.setCustomerName(sale.getCustomer().getName());
 
+        } else {
+
+            response.setCustomerId(null);
+            response.setCustomerName("Walk-In");
         }
+
+        response.setPhoneNumber(sale.getPhoneNumber());
+        response.setPaymentMethod(sale.getPaymentMethod());
+        response.setPaymentStatus(sale.getPaymentStatus());
+        response.setMpesaReceipt(sale.getMpesaReceipt());
         response.setTotal(sale.getTotal());
         response.setSaleDate(sale.getSaleDate());
         response.setMessage(message);
