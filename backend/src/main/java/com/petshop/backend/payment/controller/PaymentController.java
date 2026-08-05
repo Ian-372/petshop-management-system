@@ -18,18 +18,24 @@ public class PaymentController {
 
     @PostMapping("/stkpush")
     public ResponseEntity<String> initiateStkPush(
-            @RequestBody StkPushRequest request
-    ) {
+            @RequestBody StkPushRequest request) {
 
         return ResponseEntity.ok(
-                paymentService.initiateStkPush(request)
-        );
+                paymentService.initiateStkPush(request));
+    }
+
+    @PostMapping("/cash/{saleId}")
+    public ResponseEntity<String> completeCashPayment(
+            @PathVariable Long saleId) {
+
+        paymentService.completeCashPayment(saleId);
+
+        return ResponseEntity.ok("Cash payment completed.");
     }
 
     @PostMapping("/callback")
     public ResponseEntity<String> callback(
-            @RequestBody CallbackRequest request
-    ) {
+            @RequestBody CallbackRequest request) {
 
         paymentService.handleCallback(request);
 

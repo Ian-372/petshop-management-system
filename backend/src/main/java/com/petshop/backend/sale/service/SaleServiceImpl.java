@@ -40,8 +40,13 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public SaleResponse createSale(SaleRequest request) {
 
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found."));
+        Customer customer = null;
+
+        if (request.getCustomerId() != null) {
+
+            customer = customerRepository.findById(request.getCustomerId())
+                    .orElseThrow(() -> new RuntimeException("Customer not found."));
+        }
 
         Sale sale = new Sale();
 
@@ -116,8 +121,12 @@ public class SaleServiceImpl implements SaleService {
         SaleResponse response = new SaleResponse();
 
         response.setId(sale.getId());
-        response.setCustomerId(sale.getCustomer().getId());
-        response.setCustomerName(sale.getCustomer().getName());
+        if (sale.getCustomer() != null) {
+
+            response.setCustomerId(sale.getCustomer().getId());
+            response.setCustomerName(sale.getCustomer().getName());
+
+        }
         response.setTotal(sale.getTotal());
         response.setSaleDate(sale.getSaleDate());
         response.setMessage(message);

@@ -31,29 +31,30 @@ public class PaymentServiceImpl implements PaymentService {
                 this.productRepository = productRepository;
                 this.mpesaUtil = mpesaUtil;
         }
+
         @Override
-public String initiateStkPush(StkPushRequest request) {
+        public String initiateStkPush(StkPushRequest request) {
 
-    Sale sale = saleRepository.findById(request.getSaleId())
-            .orElseThrow(() -> new RuntimeException("Sale not found."));
+                Sale sale = saleRepository.findById(request.getSaleId())
+                                .orElseThrow(() -> new RuntimeException("Sale not found."));
 
-    sale.setPhoneNumber(request.getPhoneNumber());
-    sale.setPaymentMethod("MPESA");
-    sale.setPaymentStatus("PENDING");
+                sale.setPhoneNumber(request.getPhoneNumber());
+                sale.setPaymentMethod("MPESA");
+                sale.setPaymentStatus("PENDING");
 
-    saleRepository.save(sale);
+                saleRepository.save(sale);
 
-    String checkoutRequestId = mpesaUtil.sendStkPush(
-            sale.getId(),
-            request.getPhoneNumber(),
-            sale.getTotal());
+                String checkoutRequestId = mpesaUtil.sendStkPush(
+                                sale.getId(),
+                                request.getPhoneNumber(),
+                                sale.getTotal());
 
-    sale.setCheckoutRequestId(checkoutRequestId);
+                sale.setCheckoutRequestId(checkoutRequestId);
 
-    saleRepository.save(sale);
+                saleRepository.save(sale);
 
-    return checkoutRequestId;
-}
+                return checkoutRequestId;
+        }
 
         @Override
         public void handleCallback(CallbackRequest request) {
@@ -88,22 +89,7 @@ public String initiateStkPush(StkPushRequest request) {
                                 });
 
                         }
-                        List<SaleItem> saleItems = saleItemRepository.findBySale(sale);
 
-                        for (SaleItem saleItem : saleItems) {
-
-                                Product product = saleItem.getProduct();
-
-                                if (product.getQuantity() < saleItem.getQuantity()) {
-                                        throw new RuntimeException(
-                                                        "Insufficient stock for " + product.getName());
-                                }
-
-                                product.setQuantity(
-                                                product.getQuantity() - saleItem.getQuantity());
-
-                                productRepository.save(product);
-                        }
                 } else {
 
                         sale.setPaymentStatus("FAILED");
@@ -114,5 +100,17 @@ public String initiateStkPush(StkPushRequest request) {
 
                 System.out.println("Payment updated successfully.");
 
+        }
+
+        @Override
+        public void completeCashPayment(Long saleId) {
+
+                Sale sale = saleRepository.findById(saleId)
+                                .orElseThrow(() -> new RuntimeException("Sale not found."));
+
+                sale.setPaymentMethod("CASH");
+                sale.setPaymentStatus("COMPLETED");
+
+                saleRepository.save(sale);
         }
 }

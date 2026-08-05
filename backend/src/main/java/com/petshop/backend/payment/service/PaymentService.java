@@ -8,5 +8,6 @@ public interface PaymentService {
     String initiateStkPush(StkPushRequest request);
 
     void handleCallback(CallbackRequest request);
+    void completeCashPayment(Long saleId);
 
 }
