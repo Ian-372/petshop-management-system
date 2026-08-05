@@ -3,6 +3,7 @@ package com.petshop.backend.stock.controller;
 import com.petshop.backend.stock.dto.StockResponse;
 import com.petshop.backend.stock.service.StockService;
 import org.springframework.web.bind.annotation.*;
+import com.petshop.backend.stock.dto.StockAdjustmentRequest;
 
 import java.util.List;
 
@@ -26,4 +27,15 @@ public class StockController {
     public List<StockResponse> getLowStockProducts() {
         return stockService.getLowStockProducts();
     }
+    @PostMapping("/adjust")
+public StockResponse adjustStock(
+
+        @RequestBody StockAdjustmentRequest request
+
+) {
+
+    return stockService.adjustStock(request);
+
+}
+
 }

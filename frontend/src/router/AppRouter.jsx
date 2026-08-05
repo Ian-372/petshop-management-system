@@ -13,6 +13,8 @@ import Settings from "../pages/Settings";
 
 import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import Stock from "../pages/Stock";
+
 
 export default function AppRouter() {
 
@@ -45,6 +47,8 @@ export default function AppRouter() {
                     <Route path="suppliers" element={<Suppliers />} />
 
                     <Route path="purchases" element={<Purchases />} />
+
+                    <Route path="stock" element={<Stock />} />
 
                     <Route path="sales" element={<Sales />} />
 

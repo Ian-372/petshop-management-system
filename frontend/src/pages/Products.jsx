@@ -5,7 +5,10 @@ import api from "../services/api";
 import PageHeader from "../components/PageHeader";
 import SearchBar from "../components/SearchBar";
 import PrimaryButton from "../components/PrimaryButton";
+import SecondaryButton from "../components/SecondaryButton";
+
 import ProductModal from "../components/ProductModal";
+import CategoryModal from "../components/CategoryModal";
 
 export default function Products() {
 
@@ -13,11 +16,15 @@ export default function Products() {
 
     const [search, setSearch] = useState("");
 
-    const [openModal, setOpenModal] = useState(false);
+    const [showProductModal, setShowProductModal] = useState(false);
+
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
 
         loadProducts();
+
 
     }, []);
 
@@ -38,6 +45,37 @@ export default function Products() {
         }
 
     }
+    async function deleteProduct(id) {
+
+        const confirmed = window.confirm(
+
+            "Delete this product?"
+
+        );
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+        try {
+
+            await api.delete(`/products/${id}`);
+
+            loadProducts();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            alert("Unable to delete product.");
+
+        }
+
+    }
 
     const filteredProducts = products.filter(product =>
 
@@ -49,25 +87,51 @@ export default function Products() {
 
         <div>
 
-            <PageHeader
+            <PageHeader title="Products">
 
-                title="Products"
+                <div className="flex flex-col md:flex-row justify-between gap-4">
 
-                buttonText="Add Product"
+                    <SearchBar
 
-                onButtonClick={() => setOpenModal(true)}
+                        value={search}
 
-            >
+                        onChange={setSearch}
 
-                <SearchBar
+                        placeholder="Search products..."
 
-                    value={search}
+                    />
 
-                    onChange={setSearch}
+                    <div className="flex gap-3">
 
-                    placeholder="Search products..."
+                        <SecondaryButton
 
-                />
+                            onClick={() => setShowCategoryModal(true)}
+
+                        >
+
+                            Manage Categories
+
+                        </SecondaryButton>
+
+                        <PrimaryButton
+
+                            onClick={() => {
+
+                                setSelectedProduct(null);
+
+                                setShowProductModal(true);
+
+                            }}
+
+                        >
+
+                            + Add Product
+
+                        </PrimaryButton>
+
+                    </div>
+
+                </div>
 
             </PageHeader>
 
@@ -193,11 +257,39 @@ export default function Products() {
 
                                     <td className="text-center p-4">
 
-                                        <PrimaryButton>
+                                        <div className="flex justify-center gap-2">
 
-                                            Edit
+                                            <button
 
-                                        </PrimaryButton>
+                                                className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+
+                                                onClick={() => {
+
+                                                    setSelectedProduct(product);
+
+                                                    setShowProductModal(true);
+
+                                                }}
+
+                                            >
+
+                                                Edit
+
+                                            </button>
+
+                                            <button
+
+                                                className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+
+                                                onClick={() => deleteProduct(product.id)}
+
+                                            >
+
+                                                Delete
+
+                                            </button>
+
+                                        </div>
 
                                     </td>
 
@@ -215,11 +307,33 @@ export default function Products() {
 
             <ProductModal
 
-                open={openModal}
+                open={showProductModal}
 
-                onClose={() => setOpenModal(false)}
+                product={selectedProduct}
 
-                onSaved={loadProducts}
+                onClose={() => {
+
+                    setShowProductModal(false);
+
+                    setSelectedProduct(null);
+
+                }}
+
+                onSaved={() => {
+
+                    loadProducts();
+
+                    setSelectedProduct(null);
+
+                }}
+
+            />
+
+            <CategoryModal
+
+                open={showCategoryModal}
+
+                onClose={() => setShowCategoryModal(false)}
 
             />
 

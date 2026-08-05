@@ -1,74 +1,38 @@
 import {
-
     FaChartPie,
     FaBoxOpen,
     FaShoppingCart,
     FaUsers,
     FaTruck,
     FaFileAlt,
-    FaCog
-
+    FaCog,
+    FaClipboardList
 } from "react-icons/fa";
-
+import { FaWarehouse } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 const menuItems = [
 
+    { name: "Dashboard", path: "/", icon: <FaChartPie /> },
+
+    { name: "Products", path: "/products", icon: <FaBoxOpen /> },
     {
+    name: "Stock",
+    path: "/stock",
+    icon: <FaWarehouse />
+},
 
-        name: "Dashboard",
-        path: "/",
-        icon: <FaChartPie />
+    { name: "Purchases", path: "/purchases", icon: <FaClipboardList /> },
 
-    },
+    { name: "Sales", path: "/sales", icon: <FaShoppingCart /> },
 
-    {
+    { name: "Customers", path: "/customers", icon: <FaUsers /> },
 
-        name: "Products",
-        path: "/products",
-        icon: <FaBoxOpen />
+    { name: "Suppliers", path: "/suppliers", icon: <FaTruck /> },
 
-    },
+    { name: "Reports", path: "/reports", icon: <FaFileAlt /> },
 
-    {
-
-        name: "Sales",
-        path: "/sales",
-        icon: <FaShoppingCart />
-
-    },
-
-    {
-
-        name: "Customers",
-        path: "/customers",
-        icon: <FaUsers />
-
-    },
-
-    {
-
-        name: "Suppliers",
-        path: "/suppliers",
-        icon: <FaTruck />
-
-    },
-
-    {
-
-        name: "Reports",
-        path: "/reports",
-        icon: <FaFileAlt />
-
-    },
-
-    {
-
-        name: "Settings",
-        path: "/settings",
-        icon: <FaCog />
-
-    }
+    { name: "Settings", path: "/settings", icon: <FaCog /> }
 
 ];
 

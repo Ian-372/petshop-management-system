@@ -9,7 +9,8 @@ export default function ProductModal({
 
     open,
     onClose,
-    onSaved
+    onSaved,
+    product
 
 }) {
 
@@ -24,6 +25,38 @@ export default function ProductModal({
     const [quantity, setQuantity] = useState("");
 
     const [categoryId, setCategoryId] = useState("");
+
+    useEffect(() => {
+
+        if (product) {
+
+            setName(product.name);
+
+            setBuyingPrice(product.buyingPrice);
+
+            setSellingPrice(product.sellingPrice);
+
+            setQuantity(product.quantity);
+
+            setCategoryId(product.categoryId);
+
+        }
+
+        else {
+
+            setName("");
+
+            setBuyingPrice("");
+
+            setSellingPrice("");
+
+            setQuantity("");
+
+            setCategoryId("");
+
+        }
+
+    }, [product]);
 
     useEffect(() => {
 
@@ -79,7 +112,7 @@ export default function ProductModal({
 
         try {
 
-            await api.post("/products", {
+            const request = {
 
                 name,
 
@@ -91,8 +124,31 @@ export default function ProductModal({
 
                 categoryId: Number(categoryId)
 
-            });
+            };
 
+            if (product) {
+
+                await api.put(
+
+                    `/products/${product.id}`,
+
+                    request
+
+                );
+
+            }
+
+            else {
+
+                await api.post(
+
+                    "/products",
+
+                    request
+
+                );
+
+            }
             onSaved();
 
             onClose();
@@ -129,7 +185,17 @@ export default function ProductModal({
 
                 <h2 className="text-2xl font-bold mb-6">
 
-                    Add Product
+                    {
+
+                        product ?
+
+                            "Edit Product"
+
+                            :
+
+                            "Add Product"
+
+                    }
 
                 </h2>
 
@@ -251,7 +317,17 @@ export default function ProductModal({
 
                         >
 
-                            Save Product
+                            {
+
+                                product ?
+
+                                    "Update Product"
+
+                                    :
+
+                                    "Save Product"
+
+                            }
 
                         </PrimaryButton>
 
