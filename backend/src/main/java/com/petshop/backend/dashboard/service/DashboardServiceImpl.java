@@ -22,8 +22,7 @@ public class DashboardServiceImpl implements DashboardService {
             CustomerRepository customerRepository,
             SupplierRepository supplierRepository,
             SaleRepository saleRepository,
-            PurchaseRepository purchaseRepository
-    ) {
+            PurchaseRepository purchaseRepository) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.supplierRepository = supplierRepository;
@@ -54,6 +53,17 @@ public class DashboardServiceImpl implements DashboardService {
 
         response.setSalesRevenue(salesRevenue);
         response.setPurchaseCost(purchaseCost);
+        response.setProfit(salesRevenue - purchaseCost);
+        response.setOutOfStockProducts(
+                productRepository.countByQuantity(0));
+
+        response.setLowStockProducts(
+                productRepository.countByQuantityLessThanAndQuantityGreaterThan(10, 0));
+        response.setLoyaltyCustomers(
+                customerRepository.countByLoyaltyPointsGreaterThan(0));
+
+        response.setTotalLoyaltyPoints(
+                customerRepository.getTotalLoyaltyPoints());
 
         return response;
     }

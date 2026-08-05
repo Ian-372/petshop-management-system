@@ -9,4 +9,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByName(String name);
 
+    long countByQuantity(Integer quantity);
+
+    long countByQuantityLessThanAndQuantityGreaterThan(
+            Integer lowStock,
+            Integer zero);
+
 }

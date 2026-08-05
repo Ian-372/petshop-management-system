@@ -4,6 +4,8 @@ import com.petshop.backend.customer.entity.Customer;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sales")
@@ -116,4 +118,14 @@ public class Sale {
     public void setLoyaltyAwarded(Boolean loyaltyAwarded) {
         this.loyaltyAwarded = loyaltyAwarded;
     }
+
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SaleItem> saleItems = new ArrayList<>();
+    public List<SaleItem> getSaleItems() {
+    return saleItems;
+}
+
+public void setSaleItems(List<SaleItem> saleItems) {
+    this.saleItems = saleItems;
+}
 }

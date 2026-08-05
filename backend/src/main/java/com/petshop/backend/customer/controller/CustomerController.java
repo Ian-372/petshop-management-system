@@ -1,5 +1,6 @@
 package com.petshop.backend.customer.controller;
 
+import com.petshop.backend.customer.dto.CustomerProfileResponse;
 import com.petshop.backend.customer.dto.CustomerRequest;
 import com.petshop.backend.customer.dto.CustomerResponse;
 import com.petshop.backend.customer.service.CustomerService;
@@ -35,6 +36,13 @@ public class CustomerController {
             @PathVariable Long id) {
 
         return customerService.getCustomerById(id);
+    }
+
+    @GetMapping("/{id}/profile")
+    public CustomerProfileResponse getCustomerProfile(
+            @PathVariable Long id) {
+
+        return customerService.getCustomerProfile(id);
     }
 
     @PutMapping("/{id}")

@@ -1,6 +1,9 @@
 package com.petshop.backend.customer.dto;
 
-public class CustomerResponse {
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class CustomerProfileResponse {
 
     private Long id;
     private String name;
@@ -8,23 +11,17 @@ public class CustomerResponse {
     private String email;
     private String address;
 
-    // =========================
-    // LOYALTY
-    // =========================
     private Double totalSpent;
     private Integer loyaltyPoints;
 
-    // =========================
-    // RESPONSE MESSAGE
-    // =========================
-    private String message;
+    private Integer purchaseCount;
 
-    public CustomerResponse() {
+    private LocalDateTime lastPurchase;
+
+    private List<SaleHistoryResponse> purchases;
+
+    public CustomerProfileResponse() {
     }
-
-    // =========================
-    // BASIC DETAILS
-    // =========================
 
     public Long getId() {
         return id;
@@ -66,10 +63,6 @@ public class CustomerResponse {
         this.address = address;
     }
 
-    // =========================
-    // LOYALTY
-    // =========================
-
     public Double getTotalSpent() {
         return totalSpent;
     }
@@ -86,15 +79,27 @@ public class CustomerResponse {
         this.loyaltyPoints = loyaltyPoints;
     }
 
-    // =========================
-    // MESSAGE
-    // =========================
-
-    public String getMessage() {
-        return message;
+    public Integer getPurchaseCount() {
+        return purchaseCount;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPurchaseCount(Integer purchaseCount) {
+        this.purchaseCount = purchaseCount;
+    }
+
+    public LocalDateTime getLastPurchase() {
+        return lastPurchase;
+    }
+
+    public void setLastPurchase(LocalDateTime lastPurchase) {
+        this.lastPurchase = lastPurchase;
+    }
+
+    public List<SaleHistoryResponse> getPurchases() {
+        return purchases;
+    }
+
+    public void setPurchases(List<SaleHistoryResponse> purchases) {
+        this.purchases = purchases;
     }
 }
