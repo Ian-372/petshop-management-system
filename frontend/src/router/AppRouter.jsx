@@ -14,7 +14,7 @@ import Settings from "../pages/Settings";
 import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Stock from "../pages/Stock";
-
+import VerifyReceipt from "../pages/VerifyReceipt";
 
 export default function AppRouter() {
 
@@ -30,6 +30,11 @@ export default function AppRouter() {
                 />
 
                 <Route
+                    path="/verify/:receiptNumber"
+                    element={<VerifyReceipt />}
+                />
+
+                <Route
                     path="/"
                     element={
                         <ProtectedRoute>
@@ -39,22 +44,14 @@ export default function AppRouter() {
                 >
 
                     <Route index element={<Dashboard />} />
-
                     <Route path="products" element={<Products />} />
-
                     <Route path="customers" element={<Customers />} />
-
                     <Route path="suppliers" element={<Suppliers />} />
-
                     <Route path="purchases" element={<Purchases />} />
-
                     <Route path="stock" element={<Stock />} />
-
                     <Route path="sales" element={<Sales />} />
                     <Route path="receipt/:saleId" element={<Receipt />} />
-
                     <Route path="reports" element={<Reports />} />
-
                     <Route path="settings" element={<Settings />} />
 
                 </Route>

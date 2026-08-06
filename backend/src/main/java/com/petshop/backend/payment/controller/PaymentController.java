@@ -46,6 +46,11 @@ public class PaymentController {
     public ResponseEntity<String> callback(
             @RequestBody CallbackRequest request) {
 
+        System.out.println("=================================");
+        System.out.println("M-PESA CALLBACK RECEIVED");
+        System.out.println(request);
+        System.out.println("=================================");
+
         paymentService.handleCallback(request);
 
         return ResponseEntity.ok("Callback received");

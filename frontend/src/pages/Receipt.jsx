@@ -210,6 +210,27 @@ export default function Receipt() {
                 Total: KSh {receipt.total.toFixed(2)}
 
             </div>
+            {
+                receipt.qrCode && (
+
+                    <div className="mt-8 flex flex-col items-center">
+
+                        <img
+                            src={`data:image/png;base64,${receipt.qrCode}`}
+                            alt="Receipt QR Code"
+                            className="w-40 h-40"
+                        />
+
+                        <p className="mt-2 text-sm text-gray-500">
+
+                            Scan to verify receipt
+
+                        </p>
+
+                    </div>
+
+                )
+            }
 
             <div className="mt-8 flex justify-end">
 

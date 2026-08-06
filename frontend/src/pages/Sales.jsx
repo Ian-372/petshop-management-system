@@ -166,17 +166,10 @@ export default function Sales() {
 
                 await api.post(`/payments/cash/${sale.id}`);
 
-                alert("Cash sale completed successfully.");
+                navigate(`/receipt/${sale.id}`);
 
             }
 
-            // ============================
-            // OPEN RECEIPT
-            // ============================
-
-            navigate(`/receipt/${sale.id}`);
-
-            // ============================
 
             setCart([]);
 

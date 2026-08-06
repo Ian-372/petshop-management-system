@@ -18,6 +18,7 @@ public class ReceiptResponse {
     private String mpesaReceipt;
 
     private Double total;
+    private String qrCode;
 
     private List<ReceiptItemResponse> items;
 
@@ -94,6 +95,14 @@ public class ReceiptResponse {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
     public List<ReceiptItemResponse> getItems() {
