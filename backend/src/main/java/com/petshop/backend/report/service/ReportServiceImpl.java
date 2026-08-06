@@ -13,7 +13,9 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
 
-    public ReportServiceImpl(ReportRepository reportRepository) {
+    public ReportServiceImpl(
+            ReportRepository reportRepository) {
+
         this.reportRepository = reportRepository;
     }
 
@@ -22,21 +24,32 @@ public class ReportServiceImpl implements ReportService {
 
         SalesSummaryResponse response = new SalesSummaryResponse();
 
-        response.setTotalSales(reportRepository.countTotalSales());
-        response.setTotalRevenue(reportRepository.getTotalRevenue());
-        response.setTotalItemsSold(reportRepository.getTotalItemsSold());
-        response.setAverageSale(reportRepository.getAverageSale());
+        response.setTotalSales(
+                reportRepository.countTotalSales());
+
+        response.setTotalRevenue(
+                reportRepository.getTotalRevenue());
+
+        response.setTotalItemsSold(
+                reportRepository.getTotalItemsSold());
+
+        response.setAverageSale(
+                reportRepository.getAverageSale());
 
         return response;
     }
 
     @Override
     public List<DailySalesResponse> getDailySales() {
+
         return reportRepository.getDailySales();
+
     }
 
     @Override
     public List<ProductSalesResponse> getTopSellingProducts() {
+
         return reportRepository.getTopSellingProducts();
+
     }
 }
