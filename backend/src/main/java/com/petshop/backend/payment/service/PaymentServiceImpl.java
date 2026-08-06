@@ -11,6 +11,7 @@ import com.petshop.backend.product.repository.ProductRepository;
 import com.petshop.backend.sale.entity.SaleItem;
 import com.petshop.backend.sale.repository.SaleItemRepository;
 import java.util.List;
+import com.petshop.backend.sale.service.SaleService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -19,17 +20,20 @@ public class PaymentServiceImpl implements PaymentService {
         private final SaleItemRepository saleItemRepository;
         private final ProductRepository productRepository;
         private final MpesaUtil mpesaUtil;
+        private final SaleService saleService;
 
         public PaymentServiceImpl(
                         SaleRepository saleRepository,
                         SaleItemRepository saleItemRepository,
                         ProductRepository productRepository,
-                        MpesaUtil mpesaUtil) {
+                        MpesaUtil mpesaUtil,
+                        SaleService saleService) {
 
                 this.saleRepository = saleRepository;
                 this.saleItemRepository = saleItemRepository;
                 this.productRepository = productRepository;
                 this.mpesaUtil = mpesaUtil;
+                this.saleService = saleService;
         }
 
         @Override
@@ -69,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
 
                 if (callback.getResultCode() == 0) {
 
-                        sale.setPaymentStatus("COMPLETED");
+                        sale.setPaymentStatus("PAID");
 
                         if (callback.getCallbackMetadata() != null) {
 
@@ -109,8 +113,15 @@ public class PaymentServiceImpl implements PaymentService {
                                 .orElseThrow(() -> new RuntimeException("Sale not found."));
 
                 sale.setPaymentMethod("CASH");
-                sale.setPaymentStatus("COMPLETED");
+                sale.setPaymentStatus("PAID");
 
                 saleRepository.save(sale);
+        }
+
+        @Override
+        public void cancelPendingSale(Long saleId) {
+
+                saleService.cancelPendingSale(saleId);
+
         }
 }

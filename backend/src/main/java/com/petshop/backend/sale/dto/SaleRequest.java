@@ -6,7 +6,26 @@ public class SaleRequest {
 
     private String customerType;
 
-     private String phoneNumber;
+    private String phoneNumber;
+    private Double amountGiven;
+
+    private Double balance;
+
+    public Double getAmountGiven() {
+        return amountGiven;
+    }
+
+    public void setAmountGiven(Double amountGiven) {
+        this.amountGiven = amountGiven;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
 
     private String customerName;
 
@@ -48,7 +67,6 @@ public class SaleRequest {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
-
 
     public List<SaleItemRequest> getItems() {
         return items;

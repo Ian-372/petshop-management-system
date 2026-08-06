@@ -21,6 +21,27 @@ public class Sale {
 
     @Column(nullable = false)
     private Double total;
+    @Column(nullable = false)
+    private Double amountGiven = 0.0;
+
+    @Column(nullable = false)
+    private Double balance = 0.0;
+
+    public Double getAmountGiven() {
+        return amountGiven;
+    }
+
+    public void setAmountGiven(Double amountGiven) {
+        this.amountGiven = amountGiven;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
 
     private String paymentStatus;
 
@@ -121,11 +142,12 @@ public class Sale {
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> saleItems = new ArrayList<>();
-    public List<SaleItem> getSaleItems() {
-    return saleItems;
-}
 
-public void setSaleItems(List<SaleItem> saleItems) {
-    this.saleItems = saleItems;
-}
+    public List<SaleItem> getSaleItems() {
+        return saleItems;
+    }
+
+    public void setSaleItems(List<SaleItem> saleItems) {
+        this.saleItems = saleItems;
+    }
 }

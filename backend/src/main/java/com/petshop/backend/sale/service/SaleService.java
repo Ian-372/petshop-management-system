@@ -12,4 +12,5 @@ public interface SaleService {
     List<SaleResponse> getAllSales();
 
     SaleResponse getSaleById(Long id);
+    void cancelPendingSale(Long saleId);
 }

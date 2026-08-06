@@ -33,6 +33,15 @@ public class PaymentController {
         return ResponseEntity.ok("Cash payment completed.");
     }
 
+    @PostMapping("/cancel/{saleId}")
+    public ResponseEntity<String> cancelSale(
+            @PathVariable Long saleId) {
+
+        paymentService.cancelPendingSale(saleId);
+
+        return ResponseEntity.ok("Sale cancelled.");
+    }
+
     @PostMapping("/callback")
     public ResponseEntity<String> callback(
             @RequestBody CallbackRequest request) {

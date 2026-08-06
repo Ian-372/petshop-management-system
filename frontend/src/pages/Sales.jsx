@@ -22,6 +22,9 @@ export default function Sales() {
 
     const [paymentMethod, setPaymentMethod] = useState("CASH");
     const navigate = useNavigate();
+    const [amountGiven, setAmountGiven] = useState("");
+
+
 
 
     useEffect(() => {
@@ -69,6 +72,16 @@ export default function Sales() {
 
                 paymentMethod,
 
+                amountGiven:
+                    paymentMethod === "CASH"
+                        ? Number(amountGiven)
+                        : 0,
+
+                balance:
+                    paymentMethod === "CASH"
+                        ? Number(balance)
+                        : 0,
+
                 items: cart.map(item => ({
 
                     productId: item.id,
@@ -92,7 +105,61 @@ export default function Sales() {
 
                 });
 
-                alert("STK Push sent to customer.");
+                alert("STK Push sent.\nWaiting for customer payment...");
+
+                const start = Date.now();
+
+                const interval = setInterval(async () => {
+
+                    try {
+
+                        const response = await api.get(`/sales/${sale.id}`);
+
+                        const updatedSale = response.data;
+
+                        if (updatedSale.paymentStatus === "PAID") {
+
+                            clearInterval(interval);
+
+                            navigate(`/receipt/${sale.id}`);
+
+                            return;
+
+                        }
+
+                        if (updatedSale.paymentStatus === "FAILED") {
+
+                            clearInterval(interval);
+
+                            await api.post(`/payments/cancel/${sale.id}`);
+
+                            alert("Customer cancelled or payment failed.");
+
+                            return;
+
+                        }
+
+                        if (Date.now() - start > 90000) {
+
+                            clearInterval(interval);
+
+                            await api.post(`/payments/cancel/${sale.id}`);
+
+                            alert("Payment timed out.");
+
+                            return;
+
+                        }
+
+                    } catch (err) {
+
+                        clearInterval(interval);
+
+                        alert("Error checking payment status.");
+
+                    }
+
+                }, 2000);
 
             }
             else {
@@ -262,6 +329,9 @@ export default function Sales() {
         0
 
     );
+    const balance =
+        Number(amountGiven || 0) - subtotal;
+
 
     return (
 
@@ -486,8 +556,7 @@ export default function Sales() {
                         </div>
 
                         {
-
-                            paymentMethod === "MPESA" && (
+                            paymentMethod === "MPESA" ? (
 
                                 <div>
 
@@ -502,9 +571,7 @@ export default function Sales() {
                                         value={phoneNumber}
 
                                         onChange={(e) =>
-
                                             setPhoneNumber(e.target.value)
-
                                         }
 
                                         placeholder="2547XXXXXXXX"
@@ -515,8 +582,70 @@ export default function Sales() {
 
                                 </div>
 
-                            )
+                            ) : (
 
+                                <div className="space-y-3">
+
+                                    <div>
+
+                                        <label className="font-semibold">
+
+                                            Amount Given
+
+                                        </label>
+
+                                        <input
+
+                                            type="number"
+
+                                            value={amountGiven}
+
+                                            onChange={(e) =>
+                                                setAmountGiven(e.target.value)
+                                            }
+
+                                            placeholder="Enter cash received"
+
+                                            className="w-full border rounded-lg p-3 mt-2"
+
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label className="font-semibold">
+
+                                            Balance
+
+                                        </label>
+
+                                        <div className="mt-2 border rounded-lg p-3 bg-slate-100 font-bold">
+
+                                            KSh {balance > 0 ? balance.toFixed(2) : "0.00"}
+
+                                        </div>
+
+                                    </div>
+
+                                    {
+
+                                        amountGiven &&
+                                        balance < 0 && (
+
+                                            <p className="text-red-600 text-sm">
+
+                                                Amount given is less than the total.
+
+                                            </p>
+
+                                        )
+
+                                    }
+
+                                </div>
+
+                            )
                         }
 
                         <div className="flex justify-between text-xl font-bold">
@@ -528,11 +657,12 @@ export default function Sales() {
                         </div>
 
                         <PrimaryButton
-
                             className="w-full"
-
                             onClick={completeSale}
-
+                            disabled={
+                                paymentMethod === "CASH" &&
+                                Number(amountGiven || 0) < subtotal
+                            }
                         >
 
                             Complete Sale

@@ -99,7 +99,22 @@ public class SaleServiceImpl implements SaleService {
         sale.setCustomer(customer);
         sale.setPhoneNumber(request.getPhoneNumber());
         sale.setPaymentMethod(request.getPaymentMethod());
-        sale.setPaymentStatus("PAID");
+
+        sale.setPaymentStatus(
+                request.getPaymentMethod().equals("MPESA")
+                        ? "PENDING"
+                        : "PAID");
+
+        sale.setAmountGiven(
+                request.getAmountGiven() == null
+                        ? 0.0
+                        : request.getAmountGiven());
+
+        sale.setBalance(
+                request.getBalance() == null
+                        ? 0.0
+                        : request.getBalance());
+
         sale.setSaleDate(LocalDateTime.now());
 
         double total = 0.0;
@@ -206,4 +221,36 @@ public class SaleServiceImpl implements SaleService {
 
         return response;
     }
+    @Override
+@Transactional
+public void cancelPendingSale(Long saleId) {
+
+    Sale sale = saleRepository.findById(saleId)
+            .orElseThrow(() -> new RuntimeException("Sale not found."));
+
+    // only pending sales can be cancelled
+    if (!"PENDING".equals(sale.getPaymentStatus())) {
+        throw new RuntimeException("Only pending sales can be cancelled.");
+    }
+
+    // restore stock
+    List<SaleItem> items = saleItemRepository.findBySale(sale);
+
+    for (SaleItem item : items) {
+
+        Product product = item.getProduct();
+
+        product.setQuantity(
+                product.getQuantity() + item.getQuantity()
+        );
+
+        productRepository.save(product);
+    }
+
+    // delete sale items
+    saleItemRepository.deleteAll(items);
+
+    // delete sale
+    saleRepository.delete(sale);
+}
 }
