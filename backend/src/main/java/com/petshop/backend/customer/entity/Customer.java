@@ -29,6 +29,17 @@ public class Customer {
     @Column(nullable = false)
     private Double totalSpent = 0.0;
 
+    @Column(nullable = false)
+    private Double totalDebt = 0.0;
+
+    public Double getTotalDebt() {
+        return totalDebt;
+    }
+
+    public void setTotalDebt(Double totalDebt) {
+        this.totalDebt = totalDebt;
+    }
+
     private LocalDateTime lastPurchaseDate;
 
     public Customer() {

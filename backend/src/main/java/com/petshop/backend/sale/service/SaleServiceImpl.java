@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import com.petshop.backend.debt.repository.DebtPaymentRepository;
 
 @Service
 @Transactional
@@ -25,21 +24,19 @@ public class SaleServiceImpl implements SaleService {
     private final SaleRepository saleRepository;
     private final SaleItemRepository saleItemRepository;
     private final CustomerRepository customerRepository;
+
     private final ProductRepository productRepository;
-    private final DebtPaymentRepository debtPaymentRepository;
 
     public SaleServiceImpl(
             SaleRepository saleRepository,
             SaleItemRepository saleItemRepository,
             CustomerRepository customerRepository,
-            ProductRepository productRepository,
-            DebtPaymentRepository debtPaymentRepository) {
+            ProductRepository productRepository) {
 
         this.saleRepository = saleRepository;
         this.saleItemRepository = saleItemRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
-        this.debtPaymentRepository = debtPaymentRepository;
     }
 
     @Override
@@ -47,15 +44,28 @@ public class SaleServiceImpl implements SaleService {
 
         Customer customer = null;
 
-        System.out.println("PHONE RECEIVED = [" + request.getPhoneNumber() + "]");
-        System.out.println("TYPE = " + request.getCustomerType());
+        System.out.println(
+                "PHONE RECEIVED = [" + request.getPhoneNumber() + "]");
+
+        System.out.println(
+                "TYPE = " + request.getCustomerType());
+
+        /*
+         * ==========================
+         * FIND OR CREATE CUSTOMER
+         * ==========================
+         */
 
         if (request.getPhoneNumber() != null &&
                 !request.getPhoneNumber().isBlank()) {
 
-            Optional<Customer> existingCustomer = customerRepository.findByPhone(request.getPhoneNumber());
+            Optional<Customer> existingCustomer =
+                    customerRepository.findByPhone(
+                            request.getPhoneNumber());
 
-            System.out.println("CUSTOMER FOUND = " + existingCustomer.isPresent());
+            System.out.println(
+                    "CUSTOMER FOUND = " +
+                            existingCustomer.isPresent());
 
             if (existingCustomer.isPresent()) {
 
@@ -65,7 +75,8 @@ public class SaleServiceImpl implements SaleService {
 
                 customer = new Customer();
 
-                if ("REGISTERED".equalsIgnoreCase(request.getCustomerType())) {
+                if ("REGISTERED".equalsIgnoreCase(
+                        request.getCustomerType())) {
 
                     customer.setName(request.getCustomerName());
 
@@ -74,7 +85,8 @@ public class SaleServiceImpl implements SaleService {
                     if (request.getCustomerName() != null &&
                             !request.getCustomerName().isBlank()) {
 
-                        customer.setName(request.getCustomerName());
+                        customer.setName(
+                                request.getCustomerName());
 
                     } else {
 
@@ -87,16 +99,25 @@ public class SaleServiceImpl implements SaleService {
                 customer.setAddress(null);
                 customer.setLoyaltyPoints(0);
                 customer.setTotalSpent(0.0);
-                customer.setLastPurchaseDate(LocalDateTime.now());
+                customer.setTotalDebt(0.0);
+                customer.setLastPurchaseDate(
+                        LocalDateTime.now());
 
                 customer = customerRepository.save(customer);
             }
 
         } else {
 
-            System.out.println("No phone number supplied. Proceeding as anonymous walk-in.");
-
+            System.out.println(
+                    "No phone number supplied. " +
+                    "Proceeding as anonymous walk-in.");
         }
+
+        /*
+         * ==========================
+         * CREATE SALE
+         * ==========================
+         */
 
         Sale sale = new Sale();
 
@@ -104,50 +125,151 @@ public class SaleServiceImpl implements SaleService {
         sale.setPhoneNumber(request.getPhoneNumber());
         sale.setPaymentMethod(request.getPaymentMethod());
 
+        /*
+         * M-PESA starts as PENDING.
+         * CASH and DEBIT are completed immediately.
+         */
+
         sale.setPaymentStatus(
-                request.getPaymentMethod().equals("MPESA")
+                "MPESA".equalsIgnoreCase(
+                        request.getPaymentMethod())
                         ? "PENDING"
                         : "PAID");
 
-        sale.setAmountGiven(
-                request.getAmountGiven() == null
-                        ? 0.0
-                        : request.getAmountGiven());
-
-        sale.setBalance(
-                request.getBalance() == null
-                        ? 0.0
-                        : request.getBalance());
-
-        sale.setSaleDate(LocalDateTime.now());
+        /*
+         * ==========================
+         * CALCULATE TOTAL
+         * ==========================
+         */
 
         double total = 0.0;
 
         for (var itemRequest : request.getItems()) {
 
-            Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            Product product =
+                    productRepository.findById(
+                            itemRequest.getProductId())
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Product not found"));
 
-            if (product.getQuantity() < itemRequest.getQuantity()) {
+            if (product.getQuantity() <
+                    itemRequest.getQuantity()) {
 
                 throw new RuntimeException(
-                        "Insufficient stock for " + product.getName());
+                        "Insufficient stock for " +
+                                product.getName());
             }
 
-            total += product.getSellingPrice() * itemRequest.getQuantity();
+            total +=
+                    product.getSellingPrice() *
+                            itemRequest.getQuantity();
         }
 
         sale.setTotal(total);
 
+        /*
+         * ==========================
+         * PAYMENT CALCULATION
+         * ==========================
+         */
+
+        double amountGiven =
+                request.getAmountGiven() == null
+                        ? 0.0
+                        : request.getAmountGiven();
+
+        double balance = 0.0;
+
+        /*
+         * DEBIT
+         *
+         * Whatever has not been paid becomes
+         * part of the customer's outstanding debt.
+         */
+
+        if ("DEBIT".equalsIgnoreCase(
+                request.getPaymentMethod())) {
+
+            if (customer == null) {
+
+                throw new RuntimeException(
+                        "A customer is required for a debit sale.");
+            }
+
+            if (amountGiven < 0) {
+
+                throw new RuntimeException(
+                        "Amount given cannot be negative.");
+            }
+
+            if (amountGiven > total) {
+
+                throw new RuntimeException(
+                        "Amount given cannot exceed sale total.");
+            }
+
+            balance = total - amountGiven;
+
+        } else if ("CASH".equalsIgnoreCase(
+                request.getPaymentMethod())) {
+
+            if (amountGiven < 0) {
+
+                throw new RuntimeException(
+                        "Amount given cannot be negative.");
+            }
+
+            if (amountGiven < total) {
+
+                throw new RuntimeException(
+                        "Cash payment is less than sale total.");
+            }
+
+            balance = 0.0;
+
+        } else if ("MPESA".equalsIgnoreCase(
+                request.getPaymentMethod())) {
+
+            /*
+             * M-Pesa payment is handled separately
+             * by the M-Pesa/STK process.
+             */
+
+            amountGiven = 0.0;
+            balance = 0.0;
+        }
+
+        sale.setAmountGiven(amountGiven);
+        sale.setBalance(balance);
+        sale.setSaleDate(LocalDateTime.now());
+
+        /*
+         * ==========================
+         * SAVE SALE
+         * ==========================
+         */
+
         Sale savedSale = saleRepository.save(sale);
+
+        /*
+         * ==========================
+         * REDUCE STOCK
+         * ==========================
+         */
 
         for (var itemRequest : request.getItems()) {
 
-            Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            Product product =
+                    productRepository.findById(
+                            itemRequest.getProductId())
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Product not found"));
 
             product.setQuantity(
-                    product.getQuantity() - itemRequest.getQuantity());
+                    product.getQuantity() -
+                            itemRequest.getQuantity());
 
             productRepository.save(product);
 
@@ -155,29 +277,71 @@ public class SaleServiceImpl implements SaleService {
 
             saleItem.setSale(savedSale);
             saleItem.setProduct(product);
-            saleItem.setQuantity(itemRequest.getQuantity());
-            saleItem.setUnitPrice(product.getSellingPrice());
+            saleItem.setQuantity(
+                    itemRequest.getQuantity());
+
+            saleItem.setUnitPrice(
+                    product.getSellingPrice());
 
             saleItem.setSubtotal(
-                    product.getSellingPrice() * itemRequest.getQuantity());
+                    product.getSellingPrice() *
+                            itemRequest.getQuantity());
 
             saleItemRepository.save(saleItem);
         }
 
+        /*
+         * ==========================
+         * UPDATE CUSTOMER
+         * ==========================
+         */
+
         if (customer != null) {
 
-            customer.setTotalSpent(customer.getTotalSpent() + total);
+            /*
+             * Total spent records the value
+             * of the sale.
+             */
+            customer.setTotalSpent(
+                    customer.getTotalSpent() + total);
 
+            /*
+             * Loyalty points.
+             */
             customer.setLoyaltyPoints(
                     customer.getLoyaltyPoints()
                             + (int) (total / 100));
 
-            customer.setLastPurchaseDate(LocalDateTime.now());
+            /*
+             * DEBIT CUSTOMER
+             *
+             * Add only the unpaid portion
+             * of this sale.
+             */
+
+            if ("DEBIT".equalsIgnoreCase(
+                    request.getPaymentMethod())) {
+
+                customer.setTotalDebt(
+                        customer.getTotalDebt() +
+                                balance);
+            }
+
+            customer.setLastPurchaseDate(
+                    LocalDateTime.now());
 
             customerRepository.save(customer);
         }
 
-        return mapToResponse(savedSale, "Sale completed successfully.");
+        /*
+         * ==========================
+         * RETURN RESPONSE
+         * ==========================
+         */
+
+        return mapToResponse(
+                savedSale,
+                "Sale completed successfully.");
     }
 
     @Override
@@ -185,76 +349,147 @@ public class SaleServiceImpl implements SaleService {
 
         return saleRepository.findAll()
                 .stream()
-                .map(sale -> mapToResponse(sale, null))
+                .map(sale ->
+                        mapToResponse(sale, null))
                 .toList();
     }
 
     @Override
     public SaleResponse getSaleById(Long id) {
 
-        Sale sale = saleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sale not found."));
+        Sale sale =
+                saleRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Sale not found."));
 
         return mapToResponse(sale, null);
     }
 
-    private SaleResponse mapToResponse(Sale sale, String message) {
+    /*
+     * ==========================
+     * MAP SALE TO RESPONSE
+     * ==========================
+     */
 
-        SaleResponse response = new SaleResponse();
+    private SaleResponse mapToResponse(
+            Sale sale,
+            String message) {
+
+        SaleResponse response =
+                new SaleResponse();
 
         response.setId(sale.getId());
 
         if (sale.getCustomer() != null) {
 
-            response.setCustomerId(sale.getCustomer().getId());
-            response.setCustomerName(sale.getCustomer().getName());
+            response.setCustomerId(
+                    sale.getCustomer().getId());
+
+            response.setCustomerName(
+                    sale.getCustomer().getName());
+
+            /*
+             * Current total outstanding debt.
+             */
+            response.setCurrentDebt(
+                    sale.getCustomer().getTotalDebt());
 
         } else {
 
             response.setCustomerId(null);
+
             response.setCustomerName("Walk-In");
+
+            response.setCurrentDebt(0.0);
         }
 
-        response.setPhoneNumber(sale.getPhoneNumber());
-        response.setPaymentMethod(sale.getPaymentMethod());
-        response.setPaymentStatus(sale.getPaymentStatus());
-        response.setMpesaReceipt(sale.getMpesaReceipt());
-        response.setTotal(sale.getTotal());
-        response.setSaleDate(sale.getSaleDate());
+        response.setPhoneNumber(
+                sale.getPhoneNumber());
+
+        response.setPaymentMethod(
+                sale.getPaymentMethod());
+
+        response.setPaymentStatus(
+                sale.getPaymentStatus());
+
+        response.setMpesaReceipt(
+                sale.getMpesaReceipt());
+
+        response.setTotal(
+                sale.getTotal());
+
+        response.setAmountGiven(
+                sale.getAmountGiven());
+
+        response.setBalance(
+                sale.getBalance());
+
+        response.setSaleDate(
+                sale.getSaleDate());
+
         response.setMessage(message);
 
         return response;
     }
 
+    /*
+     * ==========================
+     * CANCEL PENDING M-PESA SALE
+     * ==========================
+     */
+
     @Override
     @Transactional
     public void cancelPendingSale(Long saleId) {
 
-        Sale sale = saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale not found."));
+        Sale sale =
+                saleRepository.findById(saleId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Sale not found."));
 
-        // only pending sales can be cancelled
-        if (!"PENDING".equals(sale.getPaymentStatus())) {
-            throw new RuntimeException("Only pending sales can be cancelled.");
+        /*
+         * Only pending sales can be cancelled.
+         */
+
+        if (!"PENDING".equals(
+                sale.getPaymentStatus())) {
+
+            throw new RuntimeException(
+                    "Only pending sales can be cancelled.");
         }
 
-        // restore stock
-        List<SaleItem> items = saleItemRepository.findBySale(sale);
+        /*
+         * Restore stock.
+         */
+
+        List<SaleItem> items =
+                saleItemRepository.findBySale(sale);
 
         for (SaleItem item : items) {
 
-            Product product = item.getProduct();
+            Product product =
+                    item.getProduct();
 
             product.setQuantity(
-                    product.getQuantity() + item.getQuantity());
+                    product.getQuantity() +
+                            item.getQuantity());
 
             productRepository.save(product);
         }
 
-        // delete sale items
+        /*
+         * Delete sale items.
+         */
+
         saleItemRepository.deleteAll(items);
 
-        // delete sale
+        /*
+         * Delete sale.
+         */
+
         saleRepository.delete(sale);
     }
 }
+

@@ -11,6 +11,13 @@ public class SaleResponse {
     private String customerName;
 
     private Double total;
+
+    private Double amountGiven;
+
+    private Double balance;
+
+    private Double currentDebt;
+
     private String paymentStatus;
 
     private String paymentMethod;
@@ -56,6 +63,30 @@ public class SaleResponse {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public Double getAmountGiven() {
+        return amountGiven;
+    }
+
+    public void setAmountGiven(Double amountGiven) {
+        this.amountGiven = amountGiven;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
+
+    public Double getCurrentDebt() {
+        return currentDebt;
+    }
+
+    public void setCurrentDebt(Double currentDebt) {
+        this.currentDebt = currentDebt;
     }
 
     public String getPaymentStatus() {
@@ -106,3 +137,4 @@ public class SaleResponse {
         this.message = message;
     }
 }
+

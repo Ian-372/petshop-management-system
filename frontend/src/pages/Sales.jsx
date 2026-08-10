@@ -162,9 +162,14 @@ export default function Sales() {
                 }, 2000);
 
             }
-            else {
+            else if (paymentMethod === "CASH") {
 
                 await api.post(`/payments/cash/${sale.id}`);
+
+                navigate(`/receipt/${sale.id}`);
+
+            }
+            else if (paymentMethod === "DEBIT") {
 
                 navigate(`/receipt/${sale.id}`);
 
@@ -533,17 +538,16 @@ export default function Sales() {
                             >
 
                                 <option value="CASH">
-
                                     Cash
-
                                 </option>
 
                                 <option value="MPESA">
-
                                     M-Pesa
-
                                 </option>
 
+                                <option value="DEBIT">
+                                    Credit / Debt
+                                </option>
                             </select>
 
                         </div>
