@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import com.petshop.backend.debt.repository.DebtPaymentRepository;
 
 @Service
 @Transactional
@@ -25,17 +26,20 @@ public class SaleServiceImpl implements SaleService {
     private final SaleItemRepository saleItemRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final DebtPaymentRepository debtPaymentRepository;
 
     public SaleServiceImpl(
             SaleRepository saleRepository,
             SaleItemRepository saleItemRepository,
             CustomerRepository customerRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository,
+            DebtPaymentRepository debtPaymentRepository) {
 
         this.saleRepository = saleRepository;
         this.saleItemRepository = saleItemRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
+        this.debtPaymentRepository = debtPaymentRepository;
     }
 
     @Override
@@ -221,36 +225,36 @@ public class SaleServiceImpl implements SaleService {
 
         return response;
     }
+
     @Override
-@Transactional
-public void cancelPendingSale(Long saleId) {
+    @Transactional
+    public void cancelPendingSale(Long saleId) {
 
-    Sale sale = saleRepository.findById(saleId)
-            .orElseThrow(() -> new RuntimeException("Sale not found."));
+        Sale sale = saleRepository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found."));
 
-    // only pending sales can be cancelled
-    if (!"PENDING".equals(sale.getPaymentStatus())) {
-        throw new RuntimeException("Only pending sales can be cancelled.");
+        // only pending sales can be cancelled
+        if (!"PENDING".equals(sale.getPaymentStatus())) {
+            throw new RuntimeException("Only pending sales can be cancelled.");
+        }
+
+        // restore stock
+        List<SaleItem> items = saleItemRepository.findBySale(sale);
+
+        for (SaleItem item : items) {
+
+            Product product = item.getProduct();
+
+            product.setQuantity(
+                    product.getQuantity() + item.getQuantity());
+
+            productRepository.save(product);
+        }
+
+        // delete sale items
+        saleItemRepository.deleteAll(items);
+
+        // delete sale
+        saleRepository.delete(sale);
     }
-
-    // restore stock
-    List<SaleItem> items = saleItemRepository.findBySale(sale);
-
-    for (SaleItem item : items) {
-
-        Product product = item.getProduct();
-
-        product.setQuantity(
-                product.getQuantity() + item.getQuantity()
-        );
-
-        productRepository.save(product);
-    }
-
-    // delete sale items
-    saleItemRepository.deleteAll(items);
-
-    // delete sale
-    saleRepository.delete(sale);
-}
 }
