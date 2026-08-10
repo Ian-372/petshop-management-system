@@ -3,7 +3,6 @@ import {
     FaBoxOpen,
     FaShoppingCart,
     FaUsers,
-    FaTruck,
     FaFileAlt,
     FaCog,
     FaClipboardList
@@ -28,8 +27,6 @@ const menuItems = [
 
     { name: "Customers", path: "/customers", icon: <FaUsers /> },
 
-    { name: "Suppliers", path: "/suppliers", icon: <FaTruck /> },
-
     { name: "Reports", path: "/reports", icon: <FaFileAlt /> },
 
     { name: "Settings", path: "/settings", icon: <FaCog /> }
@@ -47,11 +44,9 @@ export default function Sidebar() {
                 PetShop POS
 
             </div>
-
             <nav className="mt-6">
 
                 {
-
                     menuItems.map((item) => (
 
                         <NavLink

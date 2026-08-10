@@ -5,7 +5,6 @@ import Receipt from "../pages/Receipt";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Customers from "../pages/Customers";
-import Suppliers from "../pages/Suppliers";
 import Purchases from "../pages/Purchases";
 import Sales from "../pages/Sales";
 import Reports from "../pages/Reports";
@@ -46,7 +45,6 @@ export default function AppRouter() {
                     <Route index element={<Dashboard />} />
                     <Route path="products" element={<Products />} />
                     <Route path="customers" element={<Customers />} />
-                    <Route path="suppliers" element={<Suppliers />} />
                     <Route path="purchases" element={<Purchases />} />
                     <Route path="stock" element={<Stock />} />
                     <Route path="sales" element={<Sales />} />

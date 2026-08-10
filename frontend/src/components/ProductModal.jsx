@@ -6,206 +6,260 @@ import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 
 export default function ProductModal({
-
     open,
     onClose,
     onSaved,
     product
-
 }) {
 
-    const [categories, setCategories] = useState([]);
+    
+const [categories, setCategories] = useState([]);
 
-    const [name, setName] = useState("");
+const [name, setName] = useState("");
 
-    const [buyingPrice, setBuyingPrice] = useState("");
+const [buyingPrice, setBuyingPrice] = useState("");
 
-    const [sellingPrice, setSellingPrice] = useState("");
+const [sellingPrice, setSellingPrice] = useState("");
 
-    const [quantity, setQuantity] = useState("");
+const [quantity, setQuantity] = useState("");
 
-    const [categoryId, setCategoryId] = useState("");
+const [categoryId, setCategoryId] = useState("");
 
-    useEffect(() => {
+const [supplierName, setSupplierName] = useState("");
+
+const [supplierPhone, setSupplierPhone] = useState("");
+
+const [supplierEmail, setSupplierEmail] = useState("");
+
+const [supplierAddress, setSupplierAddress] = useState("");
+
+useEffect(() => {
+
+    if (product) {
+
+        setName(product.name || "");
+
+        setBuyingPrice(product.buyingPrice ?? "");
+
+        setSellingPrice(product.sellingPrice ?? "");
+
+        setQuantity(product.quantity ?? "");
+
+        setCategoryId(product.categoryId ?? "");
+
+        setSupplierName(product.supplierName || "");
+
+        setSupplierPhone(product.supplierPhone || "");
+
+        setSupplierEmail(product.supplierEmail || "");
+
+        setSupplierAddress(product.supplierAddress || "");
+
+    }
+
+    else {
+
+        setName("");
+
+        setBuyingPrice("");
+
+        setSellingPrice("");
+
+        setQuantity("");
+
+        setCategoryId("");
+
+        setSupplierName("");
+
+        setSupplierPhone("");
+
+        setSupplierEmail("");
+
+        setSupplierAddress("");
+
+    }
+
+}, [product]);
+
+useEffect(() => {
+
+    if (open) {
+
+        loadCategories();
+
+    }
+
+}, [open]);
+
+async function loadCategories() {
+
+    try {
+
+        const response = await api.get("/categories");
+
+        setCategories(response.data);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+async function saveProduct(e) {
+
+    e.preventDefault();
+
+    if (
+
+        !name.trim() ||
+
+        !buyingPrice ||
+
+        !sellingPrice ||
+
+        !quantity ||
+
+        !categoryId ||
+
+        !supplierName.trim()
+
+    ) {
+
+        alert("Please fill all required fields.");
+
+        return;
+
+    }
+
+    try {
+
+        const request = {
+
+            name: name.trim(),
+
+            buyingPrice: Number(buyingPrice),
+
+            sellingPrice: Number(sellingPrice),
+
+            quantity: Number(quantity),
+
+            categoryId: Number(categoryId),
+
+            supplierName: supplierName.trim(),
+
+            supplierPhone: supplierPhone.trim(),
+
+            supplierEmail: supplierEmail.trim(),
+
+            supplierAddress: supplierAddress.trim()
+
+        };
 
         if (product) {
 
-            setName(product.name);
-
-            setBuyingPrice(product.buyingPrice);
-
-            setSellingPrice(product.sellingPrice);
-
-            setQuantity(product.quantity);
-
-            setCategoryId(product.categoryId);
+           await api.put(
+    `/ products / ${ product.id } `,
+    request
+);
 
         }
 
         else {
 
-            setName("");
+            await api.post(
 
-            setBuyingPrice("");
+                "/products",
 
-            setSellingPrice("");
+                request
 
-            setQuantity("");
-
-            setCategoryId("");
+            );
 
         }
 
-    }, [product]);
+        onSaved();
 
-    useEffect(() => {
+        onClose();
 
-        if (open) {
-
-            loadCategories();
-
-        }
-
-    }, [open]);
-
-    async function loadCategories() {
-
-        try {
-
-            const response = await api.get("/categories");
-
-            setCategories(response.data);
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-        }
+        resetForm();
 
     }
 
-    async function saveProduct(e) {
+    catch (error) {
 
-        e.preventDefault();
+        console.error(error);
 
-        if (
+        alert(
 
-            !name ||
+            error.response?.data?.message ||
 
-            !buyingPrice ||
+            "Unable to save product."
 
-            !sellingPrice ||
-
-            !quantity ||
-
-            !categoryId
-
-        ) {
-
-            alert("Please fill all fields.");
-
-            return;
-
-        }
-
-        try {
-
-            const request = {
-
-                name,
-
-                buyingPrice: Number(buyingPrice),
-
-                sellingPrice: Number(sellingPrice),
-
-                quantity: Number(quantity),
-
-                categoryId: Number(categoryId)
-
-            };
-
-            if (product) {
-
-                await api.put(
-
-                    `/products/${product.id}`,
-
-                    request
-
-                );
-
-            }
-
-            else {
-
-                await api.post(
-
-                    "/products",
-
-                    request
-
-                );
-
-            }
-            onSaved();
-
-            onClose();
-
-            setName("");
-
-            setBuyingPrice("");
-
-            setSellingPrice("");
-
-            setQuantity("");
-
-            setCategoryId("");
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            alert("Unable to save product.");
-
-        }
+        );
 
     }
 
-    if (!open) return null;
+}
 
-    return (
+function resetForm() {
 
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    setName("");
 
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-8">
+    setBuyingPrice("");
 
-                <h2 className="text-2xl font-bold mb-6">
+    setSellingPrice("");
 
-                    {
+    setQuantity("");
 
-                        product ?
+    setCategoryId("");
 
-                            "Edit Product"
+    setSupplierName("");
 
-                            :
+    setSupplierPhone("");
 
-                            "Add Product"
+    setSupplierEmail("");
 
-                    }
+    setSupplierAddress("");
 
-                </h2>
+}
 
-                <form
+if (!open) return null;
 
-                    onSubmit={saveProduct}
+return (
 
-                    className="space-y-4"
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
 
-                >
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto">
+
+            <h2 className="text-2xl font-bold mb-6">
+
+                {
+
+                    product
+
+                        ? "Edit Product"
+
+                        : "Add Product"
+
+                }
+
+            </h2>
+
+            <form
+                onSubmit={saveProduct}
+                className="space-y-4"
+            >
+
+                <div>
+
+                    <label className="block text-sm font-medium mb-1">
+
+                        Product Name *
+
+                    </label>
 
                     <input
 
@@ -215,37 +269,81 @@ export default function ProductModal({
 
                         value={name}
 
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) =>
+                            setName(e.target.value)
+                        }
 
                     />
+
+                </div>
+
+                <div>
+
+                    <label className="block text-sm font-medium mb-1">
+
+                        Buying Price *
+
+                    </label>
 
                     <input
 
                         className="w-full border rounded-lg p-3"
 
                         type="number"
+
+                        min="0"
+
+                        step="0.01"
 
                         placeholder="Buying Price"
 
                         value={buyingPrice}
 
-                        onChange={(e) => setBuyingPrice(e.target.value)}
+                        onChange={(e) =>
+                            setBuyingPrice(e.target.value)
+                        }
 
                     />
+
+                </div>
+
+                <div>
+
+                    <label className="block text-sm font-medium mb-1">
+
+                        Selling Price *
+
+                    </label>
 
                     <input
 
                         className="w-full border rounded-lg p-3"
 
                         type="number"
+
+                        min="0"
+
+                        step="0.01"
 
                         placeholder="Selling Price"
 
                         value={sellingPrice}
 
-                        onChange={(e) => setSellingPrice(e.target.value)}
+                        onChange={(e) =>
+                            setSellingPrice(e.target.value)
+                        }
 
                     />
+
+                </div>
+
+                <div>
+
+                    <label className="block text-sm font-medium mb-1">
+
+                        Quantity *
+
+                    </label>
 
                     <input
 
@@ -253,13 +351,27 @@ export default function ProductModal({
 
                         type="number"
 
+                        min="0"
+
                         placeholder="Quantity"
 
                         value={quantity}
 
-                        onChange={(e) => setQuantity(e.target.value)}
+                        onChange={(e) =>
+                            setQuantity(e.target.value)
+                        }
 
                     />
+
+                </div>
+
+                <div>
+
+                    <label className="block text-sm font-medium mb-1">
+
+                        Category *
+
+                    </label>
 
                     <select
 
@@ -267,7 +379,9 @@ export default function ProductModal({
 
                         value={categoryId}
 
-                        onChange={(e) => setCategoryId(e.target.value)}
+                        onChange={(e) =>
+                            setCategoryId(e.target.value)
+                        }
 
                     >
 
@@ -282,11 +396,8 @@ export default function ProductModal({
                             categories.map(category => (
 
                                 <option
-
                                     key={category.id}
-
                                     value={category.id}
-
                                 >
 
                                     {category.name}
@@ -299,46 +410,156 @@ export default function ProductModal({
 
                     </select>
 
-                    <div className="flex justify-end gap-3 pt-3">
+                </div>
 
-                        <SecondaryButton
+                <div className="border-t pt-5 mt-5">
 
-                            onClick={onClose}
+                    <h3 className="text-lg font-semibold mb-4">
 
-                        >
+                        Supplier Information
 
-                            Cancel
+                    </h3>
 
-                        </SecondaryButton>
+                    <div className="space-y-4">
 
-                        <PrimaryButton
+                        <div>
 
-                            type="submit"
+                            <label className="block text-sm font-medium mb-1">
 
-                        >
+                                Supplier Name *
 
-                            {
+                            </label>
 
-                                product ?
+                            <input
 
-                                    "Update Product"
+                                className="w-full border rounded-lg p-3"
 
-                                    :
+                                placeholder="Supplier Name"
 
-                                    "Save Product"
+                                value={supplierName}
 
-                            }
+                                onChange={(e) =>
+                                    setSupplierName(e.target.value)
+                                }
 
-                        </PrimaryButton>
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block text-sm font-medium mb-1">
+
+                                Phone
+
+                            </label>
+
+                            <input
+
+                                className="w-full border rounded-lg p-3"
+
+                                placeholder="Supplier Phone"
+
+                                value={supplierPhone}
+
+                                onChange={(e) =>
+                                    setSupplierPhone(e.target.value)
+                                }
+
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block text-sm font-medium mb-1">
+
+                                Email
+
+                            </label>
+
+                            <input
+
+                                className="w-full border rounded-lg p-3"
+
+                                type="email"
+
+                                placeholder="Supplier Email"
+
+                                value={supplierEmail}
+
+                                onChange={(e) =>
+                                    setSupplierEmail(e.target.value)
+                                }
+
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block text-sm font-medium mb-1">
+
+                                Address
+
+                            </label>
+
+                            <textarea
+
+                                className="w-full border rounded-lg p-3"
+
+                                placeholder="Supplier Address"
+
+                                rows="3"
+
+                                value={supplierAddress}
+
+                                onChange={(e) =>
+                                    setSupplierAddress(e.target.value)
+                                }
+
+                            />
+
+                        </div>
 
                     </div>
 
-                </form>
+                </div>
 
-            </div>
+                <div className="flex justify-end gap-3 pt-3">
+
+                    <SecondaryButton
+                        onClick={onClose}
+                        type="button"
+                    >
+
+                        Cancel
+
+                    </SecondaryButton>
+
+                    <PrimaryButton type="submit">
+
+                        {
+
+                            product
+
+                                ? "Update Product"
+
+                                : "Save Product"
+
+                        }
+
+                    </PrimaryButton>
+
+                </div>
+
+            </form>
 
         </div>
 
-    );
+    </div>
+
+);
+
 
 }

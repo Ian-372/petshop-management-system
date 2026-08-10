@@ -1,6 +1,7 @@
 package com.petshop.backend.product.entity;
 
 import jakarta.persistence.*;
+import com.petshop.backend.supplier.entity.Supplier;
 
 @Entity
 @Table(name = "products")
@@ -25,6 +26,10 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
+    
 
     public Product() {
     }
@@ -75,5 +80,13 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 }

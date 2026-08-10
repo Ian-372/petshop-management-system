@@ -2,79 +2,131 @@ package com.petshop.backend.product.dto;
 
 public class ProductResponse {
 
-    private Long id;
-    private String name;
-    private Double buyingPrice;
-    private Double sellingPrice;
-    private Integer quantity;
-    private Long categoryId;
-    private String categoryName;
-    private String message;
 
-    public ProductResponse() {
-    }
+private Long id;
+private String name;
+private Double buyingPrice;
+private Double sellingPrice;
+private Integer quantity;
 
-    public Long getId() {
-        return id;
-    }
+private Long categoryId;
+private String categoryName;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+private Long supplierId;
+private String supplierName;
+private String supplierPhone;
+private String supplierEmail;
+private String supplierAddress;
 
-    public String getName() {
-        return name;
-    }
+private String message;
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public Double getBuyingPrice() {
-        return buyingPrice;
-    }
+public ProductResponse() {
+}
 
-    public void setBuyingPrice(Double buyingPrice) {
-        this.buyingPrice = buyingPrice;
-    }
+public Long getId() {
+    return id;
+}
 
-    public Double getSellingPrice() {
-        return sellingPrice;
-    }
+public void setId(Long id) {
+    this.id = id;
+}
 
-    public void setSellingPrice(Double sellingPrice) {
-        this.sellingPrice = sellingPrice;
-    }
+public String getName() {
+    return name;
+}
 
-    public Integer getQuantity() {
-        return quantity;
-    }
+public void setName(String name) {
+    this.name = name;
+}
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+public Double getBuyingPrice() {
+    return buyingPrice;
+}
 
-    public Long getCategoryId() {
-        return categoryId;
-    }
+public void setBuyingPrice(Double buyingPrice) {
+    this.buyingPrice = buyingPrice;
+}
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
+public Double getSellingPrice() {
+    return sellingPrice;
+}
 
-    public String getCategoryName() {
-        return categoryName;
-    }
+public void setSellingPrice(Double sellingPrice) {
+    this.sellingPrice = sellingPrice;
+}
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
+public Integer getQuantity() {
+    return quantity;
+}
 
-    public String getMessage() {
-        return message;
-    }
+public void setQuantity(Integer quantity) {
+    this.quantity = quantity;
+}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+public Long getCategoryId() {
+    return categoryId;
+}
+
+public void setCategoryId(Long categoryId) {
+    this.categoryId = categoryId;
+}
+
+public String getCategoryName() {
+    return categoryName;
+}
+
+public void setCategoryName(String categoryName) {
+    this.categoryName = categoryName;
+}
+
+public Long getSupplierId() {
+    return supplierId;
+}
+
+public void setSupplierId(Long supplierId) {
+    this.supplierId = supplierId;
+}
+
+public String getSupplierName() {
+    return supplierName;
+}
+
+public void setSupplierName(String supplierName) {
+    this.supplierName = supplierName;
+}
+
+public String getSupplierPhone() {
+    return supplierPhone;
+}
+
+public void setSupplierPhone(String supplierPhone) {
+    this.supplierPhone = supplierPhone;
+}
+
+public String getSupplierEmail() {
+    return supplierEmail;
+}
+
+public void setSupplierEmail(String supplierEmail) {
+    this.supplierEmail = supplierEmail;
+}
+
+public String getSupplierAddress() {
+    return supplierAddress;
+}
+
+public void setSupplierAddress(String supplierAddress) {
+    this.supplierAddress = supplierAddress;
+}
+
+public String getMessage() {
+    return message;
+}
+
+public void setMessage(String message) {
+    this.message = message;
+}
+
+
 }

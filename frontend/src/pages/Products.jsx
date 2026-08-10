@@ -154,6 +154,9 @@ export default function Products() {
                                 Category
 
                             </th>
+                            <th className="text-left p-4">
+                                Supplier
+                            </th>
 
                             <th className="text-left p-4">
 
@@ -207,6 +210,9 @@ export default function Products() {
 
                                         {product.categoryName}
 
+                                    </td>
+                                    <td className="p-4">
+                                        {product.supplierName || "—"}
                                     </td>
 
                                     <td className="p-4">
