@@ -59,9 +59,8 @@ public class SaleServiceImpl implements SaleService {
         if (request.getPhoneNumber() != null &&
                 !request.getPhoneNumber().isBlank()) {
 
-            Optional<Customer> existingCustomer =
-                    customerRepository.findByPhone(
-                            request.getPhoneNumber());
+            Optional<Customer> existingCustomer = customerRepository.findByPhone(
+                    request.getPhoneNumber());
 
             System.out.println(
                     "CUSTOMER FOUND = " +
@@ -110,7 +109,16 @@ public class SaleServiceImpl implements SaleService {
 
             System.out.println(
                     "No phone number supplied. " +
-                    "Proceeding as anonymous walk-in.");
+                            "Proceeding as anonymous walk-in.");
+        }
+        if ("DEBIT".equalsIgnoreCase(request.getPaymentMethod())) {
+
+            if (customer == null ||
+                    !"REGISTERED".equalsIgnoreCase(request.getCustomerType())) {
+
+                throw new RuntimeException(
+                        "A registered customer is required for credit/debt sales.");
+            }
         }
 
         /*
@@ -130,11 +138,18 @@ public class SaleServiceImpl implements SaleService {
          * CASH and DEBIT are completed immediately.
          */
 
-        sale.setPaymentStatus(
-                "MPESA".equalsIgnoreCase(
-                        request.getPaymentMethod())
-                        ? "PENDING"
-                        : "PAID");
+        if ("MPESA".equalsIgnoreCase(request.getPaymentMethod())) {
+
+            sale.setPaymentStatus("PENDING");
+
+        } else if ("DEBIT".equalsIgnoreCase(request.getPaymentMethod())) {
+
+            sale.setPaymentStatus("DEBT");
+
+        } else {
+
+            sale.setPaymentStatus("PAID");
+        }
 
         /*
          * ==========================
@@ -146,24 +161,20 @@ public class SaleServiceImpl implements SaleService {
 
         for (var itemRequest : request.getItems()) {
 
-            Product product =
-                    productRepository.findById(
-                            itemRequest.getProductId())
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "Product not found"));
+            Product product = productRepository.findById(
+                    itemRequest.getProductId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Product not found"));
 
-            if (product.getQuantity() <
-                    itemRequest.getQuantity()) {
+            if (product.getQuantity() < itemRequest.getQuantity()) {
 
                 throw new RuntimeException(
                         "Insufficient stock for " +
                                 product.getName());
             }
 
-            total +=
-                    product.getSellingPrice() *
-                            itemRequest.getQuantity();
+            total += product.getSellingPrice() *
+                    itemRequest.getQuantity();
         }
 
         sale.setTotal(total);
@@ -174,10 +185,9 @@ public class SaleServiceImpl implements SaleService {
          * ==========================
          */
 
-        double amountGiven =
-                request.getAmountGiven() == null
-                        ? 0.0
-                        : request.getAmountGiven();
+        double amountGiven = request.getAmountGiven() == null
+                ? 0.0
+                : request.getAmountGiven();
 
         double balance = 0.0;
 
@@ -260,12 +270,10 @@ public class SaleServiceImpl implements SaleService {
 
         for (var itemRequest : request.getItems()) {
 
-            Product product =
-                    productRepository.findById(
-                            itemRequest.getProductId())
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "Product not found"));
+            Product product = productRepository.findById(
+                    itemRequest.getProductId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Product not found"));
 
             product.setQuantity(
                     product.getQuantity() -
@@ -302,9 +310,49 @@ public class SaleServiceImpl implements SaleService {
              * Total spent records the value
              * of the sale.
              */
-            customer.setTotalSpent(
-                    customer.getTotalSpent() + total);
+            if (customer != null) {
 
+                /*
+                 * MONEY ACTUALLY PAID
+                 *
+                 * For CASH and M-PESA, this is the sale total.
+                 * For DEBIT, only the amount actually paid now
+                 * counts as spent.
+                 */
+                if ("DEBIT".equalsIgnoreCase(request.getPaymentMethod())) {
+
+                    customer.setTotalSpent(
+                            customer.getTotalSpent() + amountGiven);
+
+                } else if ("CASH".equalsIgnoreCase(request.getPaymentMethod())) {
+
+                    customer.setTotalSpent(
+                            customer.getTotalSpent() + total);
+
+                }
+
+                /*
+                 * Loyalty points are awarded for the purchase.
+                 */
+                customer.setLoyaltyPoints(
+                        customer.getLoyaltyPoints()
+                                + (int) (total / 100));
+
+                /*
+                 * Add only the unpaid portion to debt.
+                 */
+                if ("DEBIT".equalsIgnoreCase(
+                        request.getPaymentMethod())) {
+
+                    customer.setTotalDebt(
+                            customer.getTotalDebt() + balance);
+                }
+
+                customer.setLastPurchaseDate(
+                        LocalDateTime.now());
+
+                customerRepository.save(customer);
+            }
             /*
              * Loyalty points.
              */
@@ -349,19 +397,16 @@ public class SaleServiceImpl implements SaleService {
 
         return saleRepository.findAll()
                 .stream()
-                .map(sale ->
-                        mapToResponse(sale, null))
+                .map(sale -> mapToResponse(sale, null))
                 .toList();
     }
 
     @Override
     public SaleResponse getSaleById(Long id) {
 
-        Sale sale =
-                saleRepository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Sale not found."));
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        "Sale not found."));
 
         return mapToResponse(sale, null);
     }
@@ -376,8 +421,7 @@ public class SaleServiceImpl implements SaleService {
             Sale sale,
             String message) {
 
-        SaleResponse response =
-                new SaleResponse();
+        SaleResponse response = new SaleResponse();
 
         response.setId(sale.getId());
 
@@ -443,11 +487,9 @@ public class SaleServiceImpl implements SaleService {
     @Transactional
     public void cancelPendingSale(Long saleId) {
 
-        Sale sale =
-                saleRepository.findById(saleId)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Sale not found."));
+        Sale sale = saleRepository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Sale not found."));
 
         /*
          * Only pending sales can be cancelled.
@@ -464,13 +506,11 @@ public class SaleServiceImpl implements SaleService {
          * Restore stock.
          */
 
-        List<SaleItem> items =
-                saleItemRepository.findBySale(sale);
+        List<SaleItem> items = saleItemRepository.findBySale(sale);
 
         for (SaleItem item : items) {
 
-            Product product =
-                    item.getProduct();
+            Product product = item.getProduct();
 
             product.setQuantity(
                     product.getQuantity() +
@@ -492,4 +532,3 @@ public class SaleServiceImpl implements SaleService {
         saleRepository.delete(sale);
     }
 }
-

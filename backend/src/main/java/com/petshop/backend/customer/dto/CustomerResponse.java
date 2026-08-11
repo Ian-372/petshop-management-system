@@ -12,6 +12,7 @@ public class CustomerResponse {
     // LOYALTY
     // =========================
     private Double totalSpent;
+    private Double totalDebt;
     private Integer loyaltyPoints;
 
     // =========================
@@ -76,6 +77,14 @@ public class CustomerResponse {
 
     public void setTotalSpent(Double totalSpent) {
         this.totalSpent = totalSpent;
+    }
+
+    public Double getTotalDebt() {
+        return totalDebt;
+    }
+
+    public void setTotalDebt(Double totalDebt) {
+        this.totalDebt = totalDebt;
     }
 
     public Integer getLoyaltyPoints() {

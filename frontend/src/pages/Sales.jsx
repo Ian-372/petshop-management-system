@@ -558,53 +558,38 @@ export default function Sales() {
                                 <div>
 
                                     <label className="font-semibold">
-
-                                        Phone Number
-
+                                        M-Pesa Phone Number
                                     </label>
 
                                     <input
-
                                         value={phoneNumber}
-
                                         onChange={(e) =>
                                             setPhoneNumber(e.target.value)
                                         }
-
                                         placeholder="2547XXXXXXXX"
-
                                         className="w-full border rounded-lg p-3 mt-2"
-
                                     />
 
                                 </div>
 
-                            ) : (
+                            ) : paymentMethod === "CASH" ? (
 
                                 <div className="space-y-3">
 
                                     <div>
 
                                         <label className="font-semibold">
-
                                             Amount Given
-
                                         </label>
 
                                         <input
-
                                             type="number"
-
                                             value={amountGiven}
-
                                             onChange={(e) =>
                                                 setAmountGiven(e.target.value)
                                             }
-
                                             placeholder="Enter cash received"
-
                                             className="w-full border rounded-lg p-3 mt-2"
-
                                         />
 
                                     </div>
@@ -612,33 +597,47 @@ export default function Sales() {
                                     <div>
 
                                         <label className="font-semibold">
-
                                             Balance
-
                                         </label>
 
                                         <div className="mt-2 border rounded-lg p-3 bg-slate-100 font-bold">
 
-                                            KSh {balance > 0 ? balance.toFixed(2) : "0.00"}
+                                            KSh {
+                                                balance > 0
+                                                    ? balance.toFixed(2)
+                                                    : "0.00"
+                                            }
 
                                         </div>
 
                                     </div>
 
                                     {
-
                                         amountGiven &&
                                         balance < 0 && (
 
                                             <p className="text-red-600 text-sm">
-
                                                 Amount given is less than the total.
-
                                             </p>
 
                                         )
-
                                     }
+
+                                </div>
+
+                            ) : (
+
+                                <div className="border rounded-lg p-4 bg-yellow-50">
+
+                                    <p className="font-semibold text-yellow-800">
+                                        Credit / Debt Sale
+                                    </p>
+
+                                    <p className="text-sm text-yellow-700 mt-1">
+                                        No payment is required now.
+                                        The full sale amount will be added to this
+                                        customer's outstanding debt.
+                                    </p>
 
                                 </div>
 

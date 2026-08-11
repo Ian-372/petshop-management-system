@@ -1,10 +1,11 @@
+
 import axios from "axios";
 
 const api = axios.create({
     baseURL: "http://localhost:8080/api",
     headers: {
         "Content-Type": "application/json",
-    }, 
+    },
 });
 
 // ===========================
@@ -22,7 +23,7 @@ api.interceptors.request.use((config) => {
 });
 
 // ===========================
-// Handle expired/invalid JWT
+// Handle authentication errors
 // ===========================
 api.interceptors.response.use(
 
@@ -30,21 +31,29 @@ api.interceptors.response.use(
 
     (error) => {
 
+        
+       //  Only redirect to login when the authentication token is actually invalid or expired
+    
         if (
             error.response &&
-            (error.response.status === 401 ||
-             error.response.status === 403)
+            error.response.status === 401
         ) {
 
-            console.log("Session expired. Redirecting to login...");
+            console.log(
+                "Session expired or authentication failed. Redirecting to login..."
+            );
 
             localStorage.removeItem("token");
 
-            window.location.href = "http://localhost:5173/login";
+            window.location.href =
+                "http://localhost:5173/login";
         }
 
+        //display page/content specific error message
         return Promise.reject(error);
     }
+
 );
 
 export default api;
+

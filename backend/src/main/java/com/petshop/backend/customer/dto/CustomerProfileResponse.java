@@ -12,6 +12,16 @@ public class CustomerProfileResponse {
     private String address;
 
     private Double totalSpent;
+    private Double totalDebt;
+
+    public Double getTotalDebt() {
+        return totalDebt;
+    }
+
+    public void setTotalDebt(Double totalDebt) {
+        this.totalDebt = totalDebt;
+    }
+
     private Integer loyaltyPoints;
 
     private Integer purchaseCount;

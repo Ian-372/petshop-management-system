@@ -137,9 +137,8 @@ export default function Customers() {
                             <th className="text-left p-4">Address</th>
 
                             <th className="text-right p-4">Spent</th>
-
+                            <th className="text-right p-4">Debt</th>
                             <th className="text-right p-4">Points</th>
-
                             <th className="text-center p-4">Actions</th>
 
                         </tr>
@@ -155,7 +154,7 @@ export default function Customers() {
                                 <tr>
 
                                     <td
-                                        colSpan="7"
+                                        colSpan="8"
                                         className="text-center py-8 text-slate-500"
                                     >
 
@@ -201,6 +200,11 @@ export default function Customers() {
                                         <td className="text-right p-4">
 
                                             KSh {(customer.totalSpent ?? 0).toLocaleString()}
+
+                                        </td>
+                                        <td className="text-right p-4 font-semibold">
+
+                                            KSh {(customer.totalDebt ?? 0).toLocaleString()}
 
                                         </td>
 

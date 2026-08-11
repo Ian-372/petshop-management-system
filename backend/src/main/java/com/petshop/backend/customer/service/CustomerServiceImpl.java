@@ -114,6 +114,7 @@ public class CustomerServiceImpl implements CustomerService {
         profile.setAddress(customer.getAddress());
 
         profile.setTotalSpent(customer.getTotalSpent());
+        profile.setTotalDebt(customer.getTotalDebt());
         profile.setLoyaltyPoints(customer.getLoyaltyPoints());
 
         profile.setPurchaseCount(sales.size());
@@ -161,6 +162,7 @@ public class CustomerServiceImpl implements CustomerService {
         response.setAddress(customer.getAddress());
 
         response.setTotalSpent(customer.getTotalSpent());
+        response.setTotalDebt(customer.getTotalDebt());
         response.setLoyaltyPoints(customer.getLoyaltyPoints());
 
         response.setMessage(message);
