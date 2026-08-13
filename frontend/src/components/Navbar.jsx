@@ -1,56 +1,40 @@
-import { FaBell, FaSearch, FaUserCircle, FaCog } from "react-icons/fa";
+import { FaUserCircle, FaCog } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+    const navigate = useNavigate();
 
     return (
+        <header className="h-20 bg-white border-b border-slate-100 px-8 transition-smooth">
+            <div className="h-full flex items-center justify-end">
+                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2 shadow-sm">
+                    <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-smooth">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
+                            <FaUserCircle className="text-lg" />
+                        </div>
+                        <div className="text-left">
+                            <p className="font-semibold text-slate-900 text-sm leading-tight">
+                                Administrator
+                            </p>
+                            <p className="text-xs text-slate-500 leading-tight">
+                                System Admin
+                            </p>
+                        </div>
+                    </div>
 
-        <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 transition-smooth">
+                    <div className="h-8 w-px bg-slate-200" />
 
-            <div className="flex-1 max-w-xl">
-                <div className="relative group">
-                    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-smooth" />
-                    <input
-                        type="text"
-                        placeholder="Search products, customers..."
-                        className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-smooth placeholder-slate-500"
-                    />
+                    <button
+                        type="button"
+                        onClick={() => navigate("/settings")}
+                        className="flex items-center justify-center h-10 w-10 rounded-xl text-slate-600 hover:text-blue-600 transition-smooth hover:bg-slate-100 border border-transparent hover:border-slate-200"
+                        aria-label="Go to settings"
+                        title="Settings"
+                    >
+                        <FaCog className="text-lg" />
+                    </button>
                 </div>
             </div>
-
-            <div className="flex items-center gap-8 ml-8">
-
-                <button className="relative text-slate-600 hover:text-blue-600 transition-smooth group">
-                    <div className="absolute inset-0 bg-slate-100 rounded-lg opacity-0 group-hover:opacity-100 -z-10 transition-smooth"></div>
-                    <FaBell className="text-xl p-2" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                        3
-                    </span>
-                </button>
-
-                <div className="w-px h-8 bg-slate-100"></div>
-
-                <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-smooth">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
-                        <FaUserCircle className="text-lg" />
-                    </div>
-                    <div>
-                        <p className="font-semibold text-slate-900 text-sm">
-                            Administrator
-                        </p>
-                        <p className="text-xs text-slate-500">
-                            System Admin
-                        </p>
-                    </div>
-                </div>
-
-                <button className="text-slate-600 hover:text-blue-600 transition-smooth p-2 hover:bg-slate-100 rounded-lg">
-                    <FaCog className="text-lg" />
-                </button>
-
-            </div>
-
         </header>
-
     );
-
 }
