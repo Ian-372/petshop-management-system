@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import SearchBar from "../components/SearchBar";
 import SaleCartItem from "../components/SaleCartItem";
 import PrimaryButton from "../components/PrimaryButton";
+
+import { FaShoppingCart, FaBox, FaMoneyBillWave, FaCheck } from "react-icons/fa";
 
 export default function Sales() {
 
@@ -23,6 +26,7 @@ export default function Sales() {
     const [paymentMethod, setPaymentMethod] = useState("CASH");
     const navigate = useNavigate();
     const [amountGiven, setAmountGiven] = useState("");
+    const [error, setError] = useState(null);
 
 
 
@@ -40,12 +44,15 @@ export default function Sales() {
             const response = await api.get("/products");
 
             setProducts(response.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load products";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -155,7 +162,9 @@ export default function Sales() {
 
                         clearInterval(interval);
 
-                        alert("Error checking payment status.");
+                        const errorMessage = err.response?.data?.message || err.message || "Error checking payment status";
+                        setError(errorMessage);
+                        console.error(errorMessage);
 
                     }
 
@@ -190,15 +199,9 @@ export default function Sales() {
 
         catch (error) {
 
-            console.error(error);
-
-            alert(
-
-                error.response?.data?.message ||
-
-                "Unable to complete sale."
-
-            );
+            const errorMessage = error.response?.data?.message || error.message || "Unable to complete sale";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -333,13 +336,30 @@ export default function Sales() {
 
     return (
 
-        <div className="space-y-6">
+        <div className="space-y-8 pb-8">
 
-            <PageHeader title="Sales" />
+            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
+
+            <div>
+                <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                    Point of Sale
+                </h1>
+                <p className="text-slate-500 text-sm">
+                    Process transactions and manage customer purchases
+                </p>
+            </div>
 
             <div className="grid grid-cols-3 gap-6">
 
-                <div className="col-span-2 bg-white rounded-xl shadow p-6">
+                {/* PRODUCTS SECTION */}
+                <div className="col-span-2 card p-6">
+
+                    <div className="flex items-center gap-2 mb-6">
+                        <FaBox className="text-blue-600 text-lg" />
+                        <h2 className="text-2xl font-bold text-slate-900">
+                            Available Products
+                        </h2>
+                    </div>
 
                     <SearchBar
 
@@ -347,7 +367,7 @@ export default function Sales() {
 
                         onChange={setSearch}
 
-                        placeholder="Search products..."
+                        placeholder="Search by product name..."
 
                     />
 
@@ -355,33 +375,54 @@ export default function Sales() {
 
                         {
 
-                            filteredProducts.map(product => (
+                            filteredProducts.length === 0 ? (
 
-                                <button
+                                <div className="text-center py-12">
+                                    <div className="text-4xl mb-2">📦</div>
+                                    <p className="text-slate-500">No products found</p>
+                                </div>
 
-                                    key={product.id}
+                            ) : (
 
-                                    onClick={() => addProduct(product)}
+                                filteredProducts.map(product => (
 
-                                    className="w-full flex justify-between p-4 border rounded-lg hover:bg-slate-100"
+                                    <button
 
-                                >
+                                        key={product.id}
 
-                                    <span>
+                                        onClick={() => addProduct(product)}
 
-                                        {product.name}
+                                        className="w-full flex justify-between items-center p-4 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all duration-200 group"
 
-                                    </span>
+                                    >
 
-                                    <span>
+                                        <div className="flex-1 text-left">
+                                            <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
 
-                                        KSh {product.sellingPrice}
+                                                {product.name}
 
-                                    </span>
+                                            </p>
+                                            <p className="text-xs text-slate-500">
+                                                Stock: {product.quantity}
+                                            </p>
+                                        </div>
 
-                                </button>
+                                        <div className="text-right">
+                                            <p className="font-bold text-slate-900">
 
-                            ))
+                                                KSh {product.sellingPrice}
+
+                                            </p>
+                                            <p className="text-xs text-emerald-600 font-semibold">
+                                                + Add
+                                            </p>
+                                        </div>
+
+                                    </button>
+
+                                ))
+
+                            )
 
                         }
 
@@ -389,135 +430,161 @@ export default function Sales() {
 
                 </div>
 
-                <div className="bg-white rounded-xl shadow p-6">
+                {/* CART SECTION */}
+                <div className="card-elevated p-6 flex flex-col h-fit sticky top-8">
 
-                    <h2 className="text-xl font-bold mb-4">
+                    <div className="flex items-center gap-2 mb-6">
+                        <FaShoppingCart className="text-emerald-600 text-lg" />
+                        <h2 className="text-2xl font-bold text-slate-900">
 
-                        Cart
+                            Shopping Cart
 
-                    </h2>
+                        </h2>
+                    </div>
 
-                    <div className="space-y-3">
+                    {/* CART ITEMS */}
+                    <div className="space-y-2 mb-6 max-h-72 overflow-y-auto">
 
                         {
 
-                            cart.map(item => (
+                            cart.length === 0 ? (
 
-                                <SaleCartItem
+                                <div className="text-center py-8">
+                                    <div className="text-3xl mb-2">🛒</div>
+                                    <p className="text-sm text-slate-500">
+                                        Cart is empty
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-1">
+                                        Add products to continue
+                                    </p>
+                                </div>
 
-                                    key={item.id}
+                            ) : (
 
-                                    item={item}
+                                cart.map(item => (
 
-                                    increase={increase}
+                                    <SaleCartItem
 
-                                    decrease={decrease}
+                                        key={item.id}
 
-                                    remove={remove}
+                                        item={item}
 
-                                />
+                                        increase={increase}
 
-                            ))
+                                        decrease={decrease}
+
+                                        remove={remove}
+
+                                    />
+
+                                ))
+
+                            )
 
                         }
 
                     </div>
 
-                    <div className="border-t mt-6 pt-6 space-y-5">
+                    {/* DIVIDER */}
+                    <div className="border-t border-slate-200 my-6"></div>
+
+                    {/* CUSTOMER SECTION */}
+                    <div className="space-y-4 mb-6">
 
                         <div>
 
-                            <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
 
-                                <label className="font-semibold">
+                                Customer Type
 
-                                    Customer Type
+                            </label>
 
-                                </label>
+                            <select
 
-                                <select
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
 
-                                    className="w-full border rounded-lg p-3 mt-2"
+                                value={customerType}
 
-                                    value={customerType}
+                                onChange={(e) => setCustomerType(e.target.value)}
 
-                                    onChange={(e) => setCustomerType(e.target.value)}
+                            >
 
-                                >
+                                <option value="REGISTERED">
 
-                                    <option value="REGISTERED">
+                                    Registered Customer
 
-                                        Registered Customer
+                                </option>
 
-                                    </option>
+                                <option value="WALK_IN">
 
-                                    <option value="WALK_IN">
+                                    Walk-In Customer
 
-                                        Walk-In Customer
+                                </option>
 
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                            <div>
-
-                                <label className="font-semibold">
-
-                                    Customer Name
-
-                                </label>
-
-                                <input
-
-                                    value={customerName}
-
-                                    onChange={(e) => setCustomerName(e.target.value)}
-
-                                    placeholder={
-
-                                        customerType === "REGISTERED"
-
-                                            ? "Customer Name"
-
-                                            : "Optional"
-
-                                    }
-
-                                    className="w-full border rounded-lg p-3 mt-2"
-
-                                />
-
-                            </div>
-
-                            <div>
-
-                                <label className="font-semibold">
-
-                                    Phone Number
-
-                                </label>
-
-                                <input
-
-                                    value={phoneNumber}
-
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-
-                                    placeholder="2547XXXXXXXX"
-
-                                    className="w-full border rounded-lg p-3 mt-2"
-
-                                />
-
-                            </div>
+                            </select>
 
                         </div>
 
                         <div>
 
-                            <label className="font-semibold">
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                                Customer Name
+
+                            </label>
+
+                            <input
+
+                                value={customerName}
+
+                                onChange={(e) => setCustomerName(e.target.value)}
+
+                                placeholder={
+
+                                    customerType === "REGISTERED"
+
+                                        ? "Select or enter name"
+
+                                        : "Optional name"
+
+                                }
+
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                                Phone Number
+
+                            </label>
+
+                            <input
+
+                                value={phoneNumber}
+
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+
+                                placeholder="2547XXXXXXXX"
+
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+
+                            />
+
+                        </div>
+
+                    </div>
+
+                    {/* PAYMENT SECTION */}
+                    <div className="space-y-4 mb-6">
+
+                        <div>
+
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
 
                                 Payment Method
 
@@ -525,7 +592,7 @@ export default function Sales() {
 
                             <select
 
-                                className="w-full border rounded-lg p-3 mt-2"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
 
                                 value={paymentMethod}
 
@@ -538,15 +605,15 @@ export default function Sales() {
                             >
 
                                 <option value="CASH">
-                                    Cash
+                                    💵 Cash
                                 </option>
 
                                 <option value="MPESA">
-                                    M-Pesa
+                                    📱 M-Pesa
                                 </option>
 
                                 <option value="DEBIT">
-                                    Credit / Debt
+                                    💳 Credit / Debt
                                 </option>
                             </select>
 
@@ -557,7 +624,7 @@ export default function Sales() {
 
                                 <div>
 
-                                    <label className="font-semibold">
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">
                                         M-Pesa Phone Number
                                     </label>
 
@@ -567,7 +634,7 @@ export default function Sales() {
                                             setPhoneNumber(e.target.value)
                                         }
                                         placeholder="2547XXXXXXXX"
-                                        className="w-full border rounded-lg p-3 mt-2"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
                                     />
 
                                 </div>
@@ -578,7 +645,7 @@ export default function Sales() {
 
                                     <div>
 
-                                        <label className="font-semibold">
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             Amount Given
                                         </label>
 
@@ -589,18 +656,22 @@ export default function Sales() {
                                                 setAmountGiven(e.target.value)
                                             }
                                             placeholder="Enter cash received"
-                                            className="w-full border rounded-lg p-3 mt-2"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
                                         />
 
                                     </div>
 
                                     <div>
 
-                                        <label className="font-semibold">
-                                            Balance
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                            Balance / Change
                                         </label>
 
-                                        <div className="mt-2 border rounded-lg p-3 bg-slate-100 font-bold">
+                                        <div className={`mt-2 border-2 rounded-lg p-3 font-bold text-lg ${
+                                            balance >= 0
+                                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                                : 'bg-red-50 border-red-300 text-red-700'
+                                        }`}>
 
                                             KSh {
                                                 balance > 0
@@ -616,9 +687,11 @@ export default function Sales() {
                                         amountGiven &&
                                         balance < 0 && (
 
-                                            <p className="text-red-600 text-sm">
-                                                Amount given is less than the total.
-                                            </p>
+                                            <div className="p-3 bg-red-50 border border-red-300 rounded-lg">
+                                                <p className="text-red-700 text-sm font-semibold">
+                                                    ⚠️ Amount given is less than the total
+                                                </p>
+                                            </div>
 
                                         )
                                     }
@@ -627,16 +700,14 @@ export default function Sales() {
 
                             ) : (
 
-                                <div className="border rounded-lg p-4 bg-yellow-50">
+                                <div className="border-2 border-amber-300 rounded-lg p-4 bg-amber-50">
 
-                                    <p className="font-semibold text-yellow-800">
-                                        Credit / Debt Sale
+                                    <p className="font-semibold text-amber-900 flex items-center gap-2">
+                                        <FaMoneyBillWave /> Credit / Debt Sale
                                     </p>
 
-                                    <p className="text-sm text-yellow-700 mt-1">
-                                        No payment is required now.
-                                        The full sale amount will be added to this
-                                        customer's outstanding debt.
+                                    <p className="text-sm text-amber-800 mt-2">
+                                        No payment required now. The full amount will be added to the customer's outstanding debt.
                                     </p>
 
                                 </div>
@@ -644,28 +715,36 @@ export default function Sales() {
                             )
                         }
 
-                        <div className="flex justify-between text-xl font-bold">
+                    </div>
 
-                            <span>Total</span>
+                    {/* TOTALS */}
+                    <div className="border-t border-slate-200 pt-4 mb-6">
 
-                            <span>KSh {subtotal}</span>
+                        <div className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-blue-100 -mx-6 px-6 py-3 rounded-lg">
+
+                            <span className="font-bold text-slate-900 text-lg">Total:</span>
+
+                            <span className="font-bold text-blue-600 text-2xl">KSh {subtotal.toLocaleString()}</span>
 
                         </div>
 
-                        <PrimaryButton
-                            className="w-full"
-                            onClick={completeSale}
-                            disabled={
+                    </div>
+
+                    {/* COMPLETE SALE BUTTON */}
+                    <PrimaryButton
+                        className="w-full py-3 text-lg flex items-center justify-center gap-2"
+                        onClick={completeSale}
+                        disabled={
+                            cart.length === 0 || (
                                 paymentMethod === "CASH" &&
                                 Number(amountGiven || 0) < subtotal
-                            }
-                        >
+                            )
+                        }
+                    >
 
-                            Complete Sale
+                        <FaCheck /> Complete Sale
 
-                        </PrimaryButton>
-
-                    </div>
+                    </PrimaryButton>
 
                 </div>
 

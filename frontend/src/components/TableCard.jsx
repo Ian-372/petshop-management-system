@@ -8,15 +8,19 @@ export default function TableCard({
 
     return (
 
-        <div className="bg-white rounded-xl shadow-md p-5">
+        <div className="card p-6">
 
-            <h2 className="text-xl font-semibold mb-4">
+            <div className="mb-6">
+                <h2 className="text-xl font-bold text-slate-900">
 
-                {title}
+                    {title}
 
-            </h2>
+                </h2>
+            </div>
 
-            {children}
+            <div className="overflow-x-auto">
+                {children}
+            </div>
 
         </div>
 

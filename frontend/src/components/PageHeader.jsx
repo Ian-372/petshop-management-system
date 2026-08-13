@@ -11,13 +11,15 @@ export default function PageHeader({
 
         <div className="mb-8">
 
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
 
-                <h1 className="text-3xl font-bold text-slate-800">
+                <div>
+                    <h1 className="text-4xl font-bold text-slate-900">
 
-                    {title}
+                        {title}
 
-                </h1>
+                    </h1>
+                </div>
 
                 {
 
@@ -27,7 +29,7 @@ export default function PageHeader({
 
                             onClick={onButtonClick}
 
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-semibold transition"
+                            className="btn-primary"
 
                         >
 

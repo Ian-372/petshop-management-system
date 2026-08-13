@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
 
 import DashboardCard from "../components/DashboardCard";
 import ChartCard from "../components/ChartCard";
@@ -11,7 +12,12 @@ import {
     FaBox,
     FaUsers,
     FaShoppingCart,
-    FaMoneyBillWave
+    FaMoneyBillWave,
+    FaFileInvoiceDollar,
+    FaChartLine,
+    FaStar,
+    FaExclamationTriangle,
+    FaTimesCircle
 
 } from "react-icons/fa";
 
@@ -41,6 +47,7 @@ ChartJS.register(
 export default function Dashboard() {
 
     const [stats, setStats] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 
@@ -55,12 +62,15 @@ export default function Dashboard() {
             const response = await api.get("/dashboard");
 
             setStats(response.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.log(error);
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load dashboard";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -70,9 +80,11 @@ export default function Dashboard() {
 
         return (
 
-            <div className="text-2xl font-bold">
-
-                Loading Dashboard...
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full mx-auto mb-4 animate-pulse"></div>
+                    <p className="text-slate-600 font-medium">Loading dashboard...</p>
+                </div>
 
             </div>
 
@@ -120,13 +132,20 @@ export default function Dashboard() {
 
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-8 pb-8">
 
-            <h1 className="text-3xl font-bold">
+            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
-                Dashboard
-
-            </h1>
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                        Dashboard
+                    </h1>
+                    <p className="text-slate-500 text-sm">
+                        Welcome back! Here's your business overview.
+                    </p>
+                </div>
+            </div>
 
             {/* KPI CARDS */}
 
@@ -134,7 +153,7 @@ export default function Dashboard() {
 
                 <DashboardCard
 
-                    title="Products"
+                    title="Total Products"
 
                     value={stats.totalProducts}
 
@@ -142,29 +161,41 @@ export default function Dashboard() {
 
                     color="text-blue-600"
 
+                    trend={12}
+
+                    trendLabel="vs last month"
+
                 />
 
                 <DashboardCard
 
-                    title="Customers"
+                    title="Total Customers"
 
                     value={stats.totalCustomers}
 
                     icon={FaUsers}
 
-                    color="text-green-600"
+                    color="text-emerald-600"
+
+                    trend={8}
+
+                    trendLabel="growth"
 
                 />
 
                 <DashboardCard
 
-                    title="Sales"
+                    title="Total Sales"
 
                     value={stats.totalSales}
 
                     icon={FaShoppingCart}
 
                     color="text-orange-600"
+
+                    trend={-3}
+
+                    trendLabel="vs last month"
 
                 />
 
@@ -176,7 +207,11 @@ export default function Dashboard() {
 
                     icon={FaMoneyBillWave}
 
-                    color="text-red-600"
+                    color="text-purple-600"
+
+                    trend={15}
+
+                    trendLabel="increase"
 
                 />
 
@@ -194,125 +229,102 @@ export default function Dashboard() {
 
                 <TableCard title="Business Summary">
 
-                    <table className="w-full">
+                    <div className="space-y-3">
 
-                        <tbody>
+                        {/* Purchase Cost */}
+                        <div className="flex justify-between items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <FaFileInvoiceDollar className="text-blue-600" />
+                                </div>
+                                <span className="font-medium text-slate-700">Purchase Cost</span>
+                            </div>
+                            <span className="font-bold text-slate-900 text-lg">
+                                KSh {(stats.purchaseCost / 1000).toFixed(0)}K
+                            </span>
+                        </div>
 
-                            <tr className="border-b">
+                        {/* Revenue */}
+                        <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <FaMoneyBillWave className="text-emerald-600" />
+                                </div>
+                                <span className="font-medium text-slate-700">Revenue</span>
+                            </div>
+                            <span className="font-bold text-emerald-700 text-lg">
+                                KSh {(stats.salesRevenue / 1000).toFixed(0)}K
+                            </span>
+                        </div>
 
-                                <td className="py-3 font-medium">
+                        {/* Profit */}
+                        <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group border-l-4 border-green-500">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <FaChartLine className="text-green-600" />
+                                </div>
+                                <span className="font-medium text-slate-700">Total Profit</span>
+                            </div>
+                            <span className="font-bold text-green-700 text-lg">
+                                KSh {(stats.profit / 1000).toFixed(0)}K
+                            </span>
+                        </div>
 
-                                    Purchase Cost
+                        {/* Loyalty Customers */}
+                        <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <FaStar className="text-purple-600" />
+                                </div>
+                                <span className="font-medium text-slate-700">Loyalty Customers</span>
+                            </div>
+                            <span className="font-bold text-purple-700 text-lg">
+                                {stats.loyaltyCustomers}
+                            </span>
+                        </div>
 
-                                </td>
+                        {/* Total Loyalty Points */}
+                        <div className="flex justify-between items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <FaStar className="text-indigo-600" />
+                                </div>
+                                <span className="font-medium text-slate-700">Total Loyalty Points</span>
+                            </div>
+                            <span className="font-bold text-indigo-700 text-lg">
+                                {stats.totalLoyaltyPoints}
+                            </span>
+                        </div>
 
-                                <td className="text-right">
-
-                                    KSh {stats.purchaseCost.toLocaleString()}
-
-                                </td>
-
-                            </tr>
-
-                            <tr className="border-b">
-
-                                <td className="py-3 font-medium">
-
-                                    Revenue
-
-                                </td>
-
-                                <td className="text-right">
-
-                                    KSh {stats.salesRevenue.toLocaleString()}
-
-                                </td>
-
-                            </tr>
-
-                            <tr className="border-b">
-
-                                <td className="py-3 font-medium">
-
-                                    Profit
-
-                                </td>
-
-                                <td className="text-right font-bold text-green-600">
-
-                                    KSh {stats.profit.toLocaleString()}
-
-                                </td>
-
-                            </tr>
-
-                            <tr className="border-b">
-
-                                <td className="py-3 font-medium">
-
-                                    Loyalty Customers
-
-                                </td>
-
-                                <td className="text-right">
-
-                                    {stats.loyaltyCustomers}
-
-                                </td>
-
-                            </tr>
-
-                            <tr className="border-b">
-
-                                <td className="py-3 font-medium">
-
-                                    Total Loyalty Points
-
-                                </td>
-
-                                <td className="text-right">
-
-                                    {stats.totalLoyaltyPoints}
-
-                                </td>
-
-                            </tr>
-
-                            <tr className="border-b">
-
-                                <td className="py-3 font-medium">
-
-                                    Low Stock Products
-
-                                </td>
-
-                                <td className="text-right text-yellow-600 font-bold">
-
+                        <div className="grid grid-cols-2 gap-3">
+                            {/* Low Stock Products */}
+                            <div className="flex justify-between items-center p-4 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors group border-l-4 border-amber-500">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-amber-100 rounded flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <FaExclamationTriangle className="text-amber-600 text-xs" />
+                                    </div>
+                                    <span className="font-medium text-amber-900 text-sm">Low Stock</span>
+                                </div>
+                                <span className="font-bold text-amber-700">
                                     {stats.lowStockProducts}
+                                </span>
+                            </div>
 
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td className="py-3 font-medium">
-
-                                    Out Of Stock
-
-                                </td>
-
-                                <td className="text-right text-red-600 font-bold">
-
+                            {/* Out Of Stock Products */}
+                            <div className="flex justify-between items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group border-l-4 border-red-500">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <FaTimesCircle className="text-red-600 text-xs" />
+                                    </div>
+                                    <span className="font-medium text-red-900 text-sm">Out of Stock</span>
+                                </div>
+                                <span className="font-bold text-red-700">
                                     {stats.outOfStockProducts}
+                                </span>
+                            </div>
+                        </div>
 
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
+                    </div>
 
                 </TableCard>
 

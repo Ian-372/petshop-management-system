@@ -1,37 +1,63 @@
-export default function DashboardCard({
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
+export default function DashboardCard({
     title,
     value,
     icon: Icon,
-    color
-
+    color = "text-blue-600",
+    trend = null,
+    trendLabel = ""
 }) {
+
+    // Color mapping for icon backgrounds
+    const colorBgMap = {
+        "text-blue-600": "bg-blue-100",
+        "text-emerald-600": "bg-emerald-100",
+        "text-orange-600": "bg-orange-100",
+        "text-purple-600": "bg-purple-100",
+        "text-pink-600": "bg-pink-100",
+    };
+
+    const bgColor = colorBgMap[color] || "bg-slate-100";
+    const isTrendPositive = trend && trend > 0;
+    const trendColor = isTrendPositive ? "text-emerald-600" : "text-red-600";
 
     return (
 
-        <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center">
+        <div className="card p-6 hover:shadow-lg group">
 
-            <div>
+            <div className="flex justify-between items-start">
 
-                <p className="text-gray-500 text-sm">
+                <div className="flex-1">
 
-                    {title}
+                    <p className="text-sm font-medium text-slate-500 mb-1">
+                        {title}
+                    </p>
 
-                </p>
+                    <div className="flex items-baseline gap-2">
+                        <h2 className="text-4xl font-bold text-slate-900">
+                            {typeof value === 'number' ? value.toLocaleString() : value}
+                        </h2>
+                    </div>
 
-                <h2 className="text-3xl font-bold mt-2">
+                    {trend !== null && (
+                        <div className={`flex items-center gap-1 mt-3 ${trendColor}`}>
+                            {isTrendPositive ? (
+                                <FaArrowUp className="text-xs" />
+                            ) : (
+                                <FaArrowDown className="text-xs" />
+                            )}
+                            <span className="text-xs font-semibold">
+                                {Math.abs(trend)}% {trendLabel}
+                            </span>
+                        </div>
+                    )}
 
-                    {value}
+                </div>
 
-                </h2>
-
-            </div>
-
-            <div
-                className={`text-4xl ${color}`}
-            >
-
-                <Icon />
+                <div className={`${bgColor} ${color} text-4xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon />
+                </div>
 
             </div>
 

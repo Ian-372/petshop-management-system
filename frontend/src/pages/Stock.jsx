@@ -8,6 +8,8 @@ import SecondaryButton from "../components/SecondaryButton";
 import PrimaryButton from "../components/PrimaryButton";
 import StockAdjustmentModal from "../components/StockAdjustmentModal";
 
+import { FaWarehouse, FaFilter, FaEdit } from "react-icons/fa";
+
 export default function Stock() {
 
     const [stock, setStock] = useState([]);
@@ -62,87 +64,99 @@ export default function Stock() {
 
     return (
 
-        <div>
+        <div className="space-y-8 pb-8">
 
-            <PageHeader title="Stock Inventory">
+            <div>
+                <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                    Stock Inventory
+                </h1>
+                <p className="text-slate-500 text-sm">
+                    Monitor and manage your product stock levels
+                </p>
+            </div>
 
-                <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
 
-                    <SearchBar
-                        value={search}
-                        onChange={setSearch}
-                        placeholder="Search products..."
-                    />
+                <SearchBar
+                    value={search}
+                    onChange={setSearch}
+                    placeholder="Search products by name..."
+                />
 
-                    <SecondaryButton
-                        onClick={() => setShowLowOnly(!showLowOnly)}
-                    >
+                <button
+                    onClick={() => setShowLowOnly(!showLowOnly)}
+                    className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                        showLowOnly
+                            ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                            : 'bg-slate-200 hover:bg-slate-300 text-slate-900'
+                    }`}
+                >
 
-                        {
+                    <FaFilter className="text-lg" />
 
-                            showLowOnly
+                    {
 
-                                ? "Show All"
+                        showLowOnly
 
-                                : "Low Stock"
+                            ? "Showing Low Stock"
 
-                        }
+                            : "Show All"
 
-                    </SecondaryButton>
+                    }
 
-                    <PrimaryButton
-                        onClick={() => setShowAdjustModal(true)}
-                    >
+                </button>
 
-                        Adjust Stock
+                <PrimaryButton
+                    onClick={() => setShowAdjustModal(true)}
+                >
 
-                    </PrimaryButton>
+                    <FaEdit className="mr-2 inline" /> Adjust Stock
 
-                </div>
+                </PrimaryButton>
 
-            </PageHeader>
+            </div>
 
-            <div className="bg-white rounded-xl shadow overflow-hidden">
+            <div className="card overflow-hidden">
 
                 <table className="w-full">
 
-                    <thead className="bg-slate-100">
+                    <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 
                         <tr>
 
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-left font-bold text-slate-700">
 
                                 Product
 
                             </th>
 
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-left font-bold text-slate-700">
 
                                 Category
 
                             </th>
 
-                            <th className="p-4 text-center">
+                            <th className="p-4 text-center font-bold text-slate-700">
 
-                                Stock
+                                Current Stock
 
                             </th>
 
-                            <th className="p-4 text-center">
+                            <th className="p-4 text-center font-bold text-slate-700">
 
                                 Status
 
                             </th>
 
-                            <th className="p-4 text-right">
+                            <th className="p-4 text-right font-bold text-slate-700">
 
-                                Buying
+                                Buying Price
 
                             </th>
 
-                            <th className="p-4 text-right">
+                            <th className="p-4 text-right font-bold text-slate-700">
 
-                                Selling
+                                Selling Price
 
                             </th>
 
@@ -154,83 +168,111 @@ export default function Stock() {
 
                         {
 
-                            filteredStock.map(item => (
+                            filteredStock.length === 0 ? (
 
-                                <tr
+                                <tr>
 
-                                    key={item.productId}
-
-                                    className="border-t"
-
-                                >
-
-                                    <td className="p-4">
-
-                                        {item.productName}
-
+                                    <td colSpan="6" className="text-center py-12">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                                                <FaWarehouse className="text-2xl text-slate-400" />
+                                            </div>
+                                            <p className="text-slate-500 font-medium">
+                                                No stock found
+                                            </p>
+                                            <p className="text-xs text-slate-400">
+                                                {search ? "Try adjusting your search" : "No inventory to display"}
+                                            </p>
+                                        </div>
                                     </td>
 
-                                    <td className="p-4">
+                                </tr>
 
-                                        {item.category}
+                            ) : (
 
-                                    </td>
+                                filteredStock.map((item, idx) => (
 
-                                    <td className="p-4 text-center font-bold">
+                                    <tr
 
-                                        {item.quantity}
+                                        key={item.productId}
 
-                                    </td>
+                                        className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}
 
-                                    <td className="p-4 text-center">
+                                    >
 
-                                        {
+                                        <td className="p-4 font-medium text-slate-900">
 
-                                            item.quantity === 0 ?
+                                            {item.productName}
 
-                                                <span className="text-red-600 font-bold">
+                                        </td>
 
-                                                    Out of Stock
+                                        <td className="p-4 text-slate-600">
 
-                                                </span>
+                                            <span className="badge badge-info">
+                                                {item.category}
+                                            </span>
 
-                                                :
+                                        </td>
 
-                                                item.lowStock ?
+                                        <td className="p-4 text-center">
+                                            <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-lg">
 
-                                                    <span className="text-orange-500 font-bold">
+                                                {item.quantity}
 
-                                                        Low Stock
+                                            </span>
+                                        </td>
+
+                                        <td className="p-4 text-center">
+
+                                            {
+
+                                                item.quantity === 0 ?
+
+                                                    <span className="badge badge-danger">
+
+                                                        Out of Stock
 
                                                     </span>
 
                                                     :
 
-                                                    <span className="text-green-600 font-bold">
+                                                    item.lowStock ?
 
-                                                        In Stock
+                                                        <span className="badge badge-warning">
 
-                                                    </span>
+                                                            Low Stock
 
-                                        }
+                                                        </span>
 
-                                    </td>
+                                                        :
 
-                                    <td className="p-4 text-right">
+                                                        <span className="badge badge-success">
 
-                                        KSh {item.buyingPrice}
+                                                            In Stock
 
-                                    </td>
+                                                        </span>
 
-                                    <td className="p-4 text-right">
+                                            }
 
-                                        KSh {item.sellingPrice}
+                                        </td>
 
-                                    </td>
+                                        <td className="p-4 text-right text-slate-900 font-semibold">
 
-                                </tr>
+                                            KSh {item.buyingPrice.toLocaleString()}
 
-                            ))
+                                        </td>
+
+                                        <td className="p-4 text-right text-slate-900 font-semibold">
+
+                                            KSh {item.sellingPrice.toLocaleString()}
+
+                                        </td>
+
+                                    </tr>
+
+                                ))
+
+                            )
 
                         }
 

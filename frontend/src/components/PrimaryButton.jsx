@@ -2,7 +2,8 @@ export default function PrimaryButton({
 
     children,
     onClick,
-    type = "button"
+    type = "button",
+    disabled = false
 
 }) {
 
@@ -14,7 +15,9 @@ export default function PrimaryButton({
 
             onClick={onClick}
 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-semibold transition"
+            disabled={disabled}
+
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
 
         >
 

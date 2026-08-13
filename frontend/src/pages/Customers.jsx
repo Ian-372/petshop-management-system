@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
 
 import PageHeader from "../components/PageHeader";
 import PrimaryButton from "../components/PrimaryButton";
 import SearchBar from "../components/SearchBar";
 import AddCustomerModal from "../components/AddCustomerModal";
 import ViewCustomerModal from "../components/ViewCustomerModal";
+
+import { FaEye, FaEdit, FaTrash, FaUsers } from "react-icons/fa";
 
 export default function Customers() {
 
@@ -17,6 +20,7 @@ export default function Customers() {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [showProfile, setShowProfile] = useState(false);
     const [profileCustomerId, setProfileCustomerId] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 
@@ -32,12 +36,15 @@ export default function Customers() {
             const response = await api.get("/customers");
 
             setCustomers(response.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load customers";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -61,14 +68,15 @@ export default function Customers() {
             await api.delete(`/customers/${id}`);
 
             loadCustomers();
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
-
-            alert("Unable to delete customer.");
+            const errorMessage = error.response?.data?.message || error.message || "Unable to delete customer";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -88,11 +96,18 @@ export default function Customers() {
 
     return (
 
-        <div className="space-y-6">
-
+        <div className="space-y-8 pb-8">
+            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
             <div className="flex justify-between items-center">
 
-                <PageHeader title="Customers" />
+                <div>
+                    <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                        Customers
+                    </h1>
+                    <p className="text-slate-500 text-sm">
+                        Manage your customer relationships and loyalty program
+                    </p>
+                </div>
 
                 <PrimaryButton
                     onClick={() => {
@@ -104,7 +119,7 @@ export default function Customers() {
                     }}
                 >
 
-                    Add Customer
+                    + Add Customer
 
                 </PrimaryButton>
 
@@ -116,30 +131,30 @@ export default function Customers() {
 
                 onChange={setSearch}
 
-                placeholder="Search customers..."
+                placeholder="Search by name, phone, or email..."
 
             />
 
-            <div className="bg-white rounded-xl shadow overflow-hidden">
+            <div className="card overflow-hidden">
 
                 <table className="w-full">
 
-                    <thead className="bg-slate-100">
+                    <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 
                         <tr>
 
-                            <th className="text-left p-4">Name</th>
+                            <th className="text-left p-4 font-bold text-slate-700">Name</th>
 
-                            <th className="text-left p-4">Phone</th>
+                            <th className="text-left p-4 font-bold text-slate-700">Phone</th>
 
-                            <th className="text-left p-4">Email</th>
+                            <th className="text-left p-4 font-bold text-slate-700">Email</th>
 
-                            <th className="text-left p-4">Address</th>
+                            <th className="text-left p-4 font-bold text-slate-700">Address</th>
 
-                            <th className="text-right p-4">Spent</th>
-                            <th className="text-right p-4">Debt</th>
-                            <th className="text-right p-4">Points</th>
-                            <th className="text-center p-4">Actions</th>
+                            <th className="text-right p-4 font-bold text-slate-700">Total Spent</th>
+                            <th className="text-right p-4 font-bold text-slate-700">Outstanding Debt</th>
+                            <th className="text-right p-4 font-bold text-slate-700">Loyalty Points</th>
+                            <th className="text-center p-4 font-bold text-slate-700">Actions</th>
 
                         </tr>
 
@@ -155,10 +170,20 @@ export default function Customers() {
 
                                     <td
                                         colSpan="8"
-                                        className="text-center py-8 text-slate-500"
+                                        className="text-center py-12"
                                     >
 
-                                        No customers found.
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                                                <FaUsers className="text-2xl text-slate-400" />
+                                            </div>
+                                            <p className="text-slate-500 font-medium">
+                                                No customers found
+                                            </p>
+                                            <p className="text-xs text-slate-400">
+                                                {search ? "Try adjusting your search criteria" : "Add your first customer to get started"}
+                                            </p>
+                                        </div>
 
                                     </td>
 
@@ -166,103 +191,123 @@ export default function Customers() {
 
                             ) : (
 
-                                filteredCustomers.map(customer => (
+                                filteredCustomers.map((customer, idx) => (
 
                                     <tr
                                         key={customer.id}
-                                        className="border-t hover:bg-slate-50"
+                                        className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}
                                     >
 
-                                        <td className="p-4">
+                                        <td className="p-4 font-medium text-slate-900">
 
                                             {customer.name}
 
                                         </td>
 
-                                        <td className="p-4">
+                                        <td className="p-4 text-slate-600">
 
                                             {customer.phone}
 
                                         </td>
 
-                                        <td className="p-4">
+                                        <td className="p-4 text-slate-600">
 
                                             {customer.email || "-"}
 
                                         </td>
 
-                                        <td className="p-4">
+                                        <td className="p-4 text-slate-600 text-sm">
 
                                             {customer.address || "-"}
 
                                         </td>
 
-                                        <td className="text-right p-4">
+                                        <td className="text-right p-4 font-semibold text-slate-900">
 
                                             KSh {(customer.totalSpent ?? 0).toLocaleString()}
 
                                         </td>
-                                        <td className="text-right p-4 font-semibold">
+                                        <td className="text-right p-4">
 
-                                            KSh {(customer.totalDebt ?? 0).toLocaleString()}
+                                            {(customer.totalDebt ?? 0) > 0 ? (
+                                                <span className="badge badge-warning">
+                                                    KSh {(customer.totalDebt ?? 0).toLocaleString()}
+                                                </span>
+                                            ) : (
+                                                <span className="badge badge-success">
+                                                    Settled
+                                                </span>
+                                            )}
 
                                         </td>
 
                                         <td className="text-right p-4">
 
-                                            ⭐ {customer.loyaltyPoints ?? 0}
+                                            <span className="badge badge-info">
+                                                ⭐ {customer.loyaltyPoints ?? 0}
+                                            </span>
 
                                         </td>
 
                                         <td className="text-center p-4">
 
-                                            <button
+                                            <div className="flex justify-center gap-2">
 
-                                                className="text-blue-600 hover:underline mr-3"
+                                                <button
 
-                                                onClick={() => {
+                                                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
 
-                                                    setProfileCustomerId(customer.id);
+                                                    onClick={() => {
 
-                                                    setShowProfile(true);
+                                                        setProfileCustomerId(customer.id);
 
-                                                }}
+                                                        setShowProfile(true);
 
-                                            >
+                                                    }}
 
-                                                View
+                                                    title="View customer details"
 
-                                            </button>
+                                                >
 
-                                            <button
+                                                    <FaEye className="text-lg" />
 
-                                                className="text-green-600 hover:underline mr-3"
+                                                </button>
 
-                                                onClick={() => {
+                                                <button
 
-                                                    setSelectedCustomer(customer);
+                                                    className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors"
 
-                                                    setShowModal(true);
+                                                    onClick={() => {
 
-                                                }}
+                                                        setSelectedCustomer(customer);
 
-                                            >
+                                                        setShowModal(true);
 
-                                                Edit
+                                                    }}
 
-                                            </button>
+                                                    title="Edit customer"
 
-                                            <button
+                                                >
 
-                                                className="text-red-600 hover:underline"
+                                                    <FaEdit className="text-lg" />
 
-                                                onClick={() => deleteCustomer(customer.id)}
+                                                </button>
 
-                                            >
+                                                <button
 
-                                                Delete
+                                                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
 
-                                            </button>
+                                                    onClick={() => deleteCustomer(customer.id)}
+
+                                                    title="Delete customer"
+
+                                                >
+
+                                                    <FaTrash className="text-lg" />
+
+                                                </button>
+
+                                            </div>
 
                                         </td>
 

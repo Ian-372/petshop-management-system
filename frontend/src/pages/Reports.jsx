@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
+import { FaChartLine, FaCreditCard, FaBoxes, FaShoppingCart } from "react-icons/fa";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -33,6 +35,7 @@ export default function Reports() {
     const [products, setProducts] = useState([]);
 
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const revenueChartData = {
 
         labels: dailySales
@@ -90,14 +93,15 @@ export default function Reports() {
             setDailySales(dailyRes.data);
 
             setProducts(productRes.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
-
-            alert("Failed to load reports.");
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load reports";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -111,128 +115,280 @@ export default function Reports() {
 
     if (loading) {
 
-        return <div className="p-8">Loading reports...</div>;
+        return (
+            <div className="space-y-8">
+                {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
+                <div>
+                    <h1 className="text-4xl font-bold text-slate-900 mb-2">Reports</h1>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="card p-6">
+                            <div className="space-y-4">
+                                <div className="skeleton h-4 w-24"></div>
+                                <div className="skeleton h-10 w-32"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="card p-6">
+                    <div className="skeleton h-6 w-32 mb-6"></div>
+                    <div className="skeleton h-80 w-full"></div>
+                </div>
+            </div>
+        );
 
     }
 
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-8 pb-8">
 
-            <h1 className="text-3xl font-bold">
-                Reports
-            </h1>
+            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
-            <div className="grid grid-cols-4 gap-6">
+            <div>
+                <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                    Reports
+                </h1>
+                <p className="text-slate-500 text-sm">
+                    Comprehensive business analytics and insights
+                </p>
+            </div>
 
-                <div className="bg-white shadow rounded-lg p-5">
+            {/* KPI CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-                    <h3>Total Sales</h3>
-
-                    <p className="text-3xl font-bold">
-
-                        {summary.totalSales}
-
-                    </p>
-
+                <div className="card p-6 group">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 mb-1">Total Sales</p>
+                            <h2 className="text-4xl font-bold text-slate-900">
+                                {summary.totalSales.toLocaleString()}
+                            </h2>
+                        </div>
+                        <div className="bg-blue-100 text-blue-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                            <FaShoppingCart />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="bg-white shadow rounded-lg p-5">
-
-                    <h3>Total Revenue</h3>
-
-                    <p className="text-3xl font-bold">
-
-                        KSh {summary.totalRevenue.toFixed(2)}
-
-                    </p>
-
+                <div className="card p-6 group">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 mb-1">Total Revenue</p>
+                            <h2 className="text-4xl font-bold text-slate-900">
+                                KSh {(summary.totalRevenue / 1000).toFixed(0)}K
+                            </h2>
+                            <p className="text-xs text-slate-500 mt-2">
+                                {(summary.totalRevenue).toLocaleString()}
+                            </p>
+                        </div>
+                        <div className="bg-emerald-100 text-emerald-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                            <FaCreditCard />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="bg-white shadow rounded-lg p-5">
-
-                    <h3>Items Sold</h3>
-
-                    <p className="text-3xl font-bold">
-
-                        {summary.totalItemsSold}
-
-                    </p>
-
+                <div className="card p-6 group">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 mb-1">Items Sold</p>
+                            <h2 className="text-4xl font-bold text-slate-900">
+                                {summary.totalItemsSold.toLocaleString()}
+                            </h2>
+                        </div>
+                        <div className="bg-orange-100 text-orange-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                            <FaBoxes />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="bg-white shadow rounded-lg p-5">
-
-                    <h3>Average Sale</h3>
-
-                    <p className="text-3xl font-bold">
-
-                        KSh {summary.averageSale.toFixed(2)}
-
-                    </p>
-
+                <div className="card p-6 group">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 mb-1">Average Sale</p>
+                            <h2 className="text-4xl font-bold text-slate-900">
+                                KSh {summary.averageSale.toFixed(0)}
+                            </h2>
+                        </div>
+                        <div className="bg-purple-100 text-purple-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                            <FaChartLine />
+                        </div>
+                    </div>
                 </div>
 
             </div>
-            <div className="bg-white shadow rounded-lg p-6">
 
-                <h2 className="text-xl font-semibold mb-6">
+            {/* REVENUE CHART */}
+            <div className="card p-6">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                        Revenue Trend
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        Daily revenue performance over time
+                    </p>
+                </div>
+                <div className="bg-gradient-to-b from-blue-50/50 to-transparent p-4 rounded-xl">
+                    <Line data={revenueChartData} options={{
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#64748B',
+                                    font: { weight: '500' }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: { color: '#94A3B8' },
+                                grid: { color: '#E2E8F0' }
+                            },
+                            x: {
+                                ticks: { color: '#94A3B8' },
+                                grid: { color: '#E2E8F0' }
+                            }
+                        }
+                    }} />
+                </div>
+            </div>
 
-                    Revenue Trend
+            {/* DAILY SALES TABLE */}
+            <div className="card overflow-hidden">
+                <div className="p-6 border-b border-slate-100">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                        Daily Sales
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        Sales activity for each day
+                    </p>
+                </div>
 
-                </h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
 
-                <Line data={revenueChartData} />
+                        <thead>
+
+                            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+
+                                <th className="text-left p-4 font-bold text-slate-700">Date</th>
+
+                                <th className="text-center p-4 font-bold text-slate-700">Number of Sales</th>
+
+                                <th className="text-center p-4 font-bold text-slate-700">Revenue</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {
+
+                                dailySales.map((day, idx) => (
+
+                                    <tr key={day.date} className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
+
+                                        <td className="p-4 font-medium text-slate-900">{day.date}</td>
+
+                                        <td className="text-center p-4 text-slate-600">
+
+                                            <span className="badge badge-info">
+                                                {day.numberOfSales}
+                                            </span>
+
+                                        </td>
+
+                                        <td className="text-center p-4 font-semibold text-slate-900">
+
+                                            KSh {day.revenue.toFixed(2)}
+
+                                        </td>
+
+                                    </tr>
+
+                                ))
+
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
 
             </div>
 
-            <div className="bg-white shadow rounded-lg p-6">
+            {/* TOP PRODUCTS TABLE */}
+            <div className="card overflow-hidden">
+                <div className="p-6 border-b border-slate-100">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                        Top Selling Products
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        Best performing products by revenue
+                    </p>
+                </div>
 
-                <h2 className="text-xl font-semibold mb-4">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
 
-                    Daily Sales
+                        <thead>
 
-                </h2>
+                            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 
-                <table className="w-full">
+                                <th className="text-left p-4 font-bold text-slate-700">
 
-                    <thead>
+                                    Product
 
-                        <tr>
+                                </th>
 
-                            <th className="text-left">Date</th>
+                                <th className="text-center p-4 font-bold text-slate-700">
 
-                            <th>Sales</th>
+                                    Quantity Sold
 
-                            <th>Revenue</th>
+                                </th>
 
-                        </tr>
+                                <th className="text-center p-4 font-bold text-slate-700">
 
-                    </thead>
+                                    Revenue
 
-                    <tbody>
+                                </th>
 
-                        {
+                            </tr>
 
-                            dailySales.map(day => (
+                        </thead>
 
-                                <tr key={day.date}>
+                        <tbody>
 
-                                    <td>{day.date}</td>
+                            {
 
-                                    <td className="text-center">
+                                products.map((product, idx) => (
 
-                                        {day.numberOfSales}
+                                    <tr key={product.productId} className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
 
-                                    </td>
+                                        <td className="p-4 font-medium text-slate-900">
 
-                                    <td className="text-center">
+                                            {product.productName}
 
-                                        KSh {day.revenue.toFixed(2)}
+                                        </td>
 
-                                    </td>
+                                        <td className="text-center p-4 text-slate-600">
 
-                                </tr>
+                                            <span className="badge badge-success">
+                                                {product.quantitySold}
+                                            </span>
+
+                                        </td>
+
+                                        <td className="text-center p-4 font-semibold text-slate-900">
+
+                                            KSh {product.revenueGenerated.toFixed(2)}
+
+                                        </td>
+
+                                    </tr>
 
                             ))
 
@@ -244,71 +400,7 @@ export default function Reports() {
 
             </div>
 
-            <div className="bg-white shadow rounded-lg p-6">
-
-                <h2 className="text-xl font-semibold mb-4">
-
-                    Top Selling Products
-
-                </h2>
-
-                <table className="w-full">
-
-                    <thead>
-
-                        <tr>
-
-                            <th className="text-left">
-
-                                Product
-
-                            </th>
-
-                            <th>Qty Sold</th>
-
-                            <th>Revenue</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            products.map(product => (
-
-                                <tr key={product.productId}>
-
-                                    <td>
-
-                                        {product.productName}
-
-                                    </td>
-
-                                    <td className="text-center">
-
-                                        {product.quantitySold}
-
-                                    </td>
-
-                                    <td className="text-center">
-
-                                        KSh {product.revenueGenerated.toFixed(2)}
-
-                                    </td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
+        </div>
 
         </div>
 

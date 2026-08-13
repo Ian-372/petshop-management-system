@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
 
 export default function Receipt() {
 
@@ -10,6 +11,7 @@ export default function Receipt() {
     const [receipt, setReceipt] = useState(null);
 
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 
@@ -24,14 +26,15 @@ export default function Receipt() {
             const response = await api.get(`/receipts/${saleId}`);
 
             setReceipt(response.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
-
-            alert("Failed to load receipt.");
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load receipt";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -48,6 +51,7 @@ export default function Receipt() {
         return (
 
             <div className="p-8">
+                {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
                 Loading receipt...
 
@@ -62,6 +66,7 @@ export default function Receipt() {
         return (
 
             <div className="p-8">
+                {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
                 Receipt not found.
 

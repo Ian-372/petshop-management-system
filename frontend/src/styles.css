@@ -1,1 +1,126 @@
 @import "tailwindcss";
+
+/* ===== REFINED COLOR PALETTE ===== */
+@layer base {
+    :root {
+        /* Professional Color Scheme */
+        --color-primary: #3B82F6;
+        --color-primary-dark: #1D4ED8;
+        --color-primary-light: #60A5FA;
+        
+        --color-secondary: #10B981;
+        --color-secondary-dark: #059669;
+        
+        --color-accent: #8B5CF6;
+        --color-accent-light: #A78BFA;
+        
+        --color-sidebar: #0F172A;
+        --color-sidebar-hover: #1E293B;
+        
+        --color-text-primary: #0F172A;
+        --color-text-secondary: #64748B;
+        --color-text-tertiary: #94A3B8;
+        
+        --color-bg-primary: #FFFFFF;
+        --color-bg-secondary: #F8FAFC;
+        --color-bg-tertiary: #F1F5F9;
+        
+        --color-border: #E2E8F0;
+        --color-border-light: #F1F5F9;
+    }
+
+    body {
+        @apply bg-gray-50 text-slate-900;
+        font-feature-settings: "kern";
+    }
+
+    /* Better typography defaults */
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-semibold tracking-tight;
+    }
+
+    h1 {
+        @apply text-3xl lg:text-4xl;
+    }
+
+    h2 {
+        @apply text-2xl;
+    }
+
+    /* Better input styling */
+    input, textarea, select {
+        @apply transition-all duration-200;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        @apply ring-2 ring-offset-2 ring-blue-400;
+    }
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
+@layer components {
+    .transition-smooth {
+        @apply transition-all duration-300 ease-in-out;
+    }
+
+    /* Card base styles */
+    .card {
+        @apply bg-white rounded-2xl shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md;
+    }
+
+    .card-elevated {
+        @apply bg-white rounded-2xl shadow-lg border border-slate-100;
+    }
+
+    /* Button base styles */
+    .btn-primary {
+        @apply bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    }
+
+    .btn-secondary {
+        @apply bg-slate-200 hover:bg-slate-300 text-slate-900 px-6 py-2.5 rounded-lg font-medium transition-all duration-200 active:scale-95;
+    }
+
+    .btn-ghost {
+        @apply text-blue-600 hover:bg-blue-50 px-6 py-2.5 rounded-lg font-medium transition-all duration-200;
+    }
+
+    .btn-danger {
+        @apply bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm;
+    }
+
+    /* Badge styles */
+    .badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    }
+
+    .badge-success {
+        @apply bg-emerald-100 text-emerald-800;
+    }
+
+    .badge-warning {
+        @apply bg-amber-100 text-amber-800;
+    }
+
+    .badge-danger {
+        @apply bg-red-100 text-red-800;
+    }
+
+    .badge-info {
+        @apply bg-blue-100 text-blue-800;
+    }
+
+    /* Skeleton loader */
+    .skeleton {
+        @apply bg-slate-200 animate-pulse rounded;
+    }
+
+    /* Trend indicator */
+    .trend-up {
+        @apply text-emerald-600;
+    }
+
+    .trend-down {
+        @apply text-red-600;
+    }
+}

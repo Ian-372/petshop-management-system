@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../services/api";
+import ErrorAlert from "../components/ErrorAlert";
 
 import PageHeader from "../components/PageHeader";
 import SearchBar from "../components/SearchBar";
@@ -9,6 +10,8 @@ import SecondaryButton from "../components/SecondaryButton";
 
 import ProductModal from "../components/ProductModal";
 import CategoryModal from "../components/CategoryModal";
+
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 export default function Products() {
 
@@ -20,6 +23,7 @@ export default function Products() {
 
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 
@@ -35,12 +39,15 @@ export default function Products() {
             const response = await api.get("/products");
 
             setProducts(response.data);
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
+            const errorMessage = error.response?.data?.message || error.message || "Failed to load products";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -64,14 +71,15 @@ export default function Products() {
             await api.delete(`/products/${id}`);
 
             loadProducts();
+            setError(null);
 
         }
 
         catch (error) {
 
-            console.error(error);
-
-            alert("Unable to delete product.");
+            const errorMessage = error.response?.data?.message || error.message || "Unable to delete product";
+            setError(errorMessage);
+            console.error(errorMessage);
 
         }
 
@@ -86,6 +94,8 @@ export default function Products() {
     return (
 
         <div>
+
+            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
             <PageHeader title="Products">
 
@@ -135,48 +145,48 @@ export default function Products() {
 
             </PageHeader>
 
-            <div className="bg-white rounded-xl shadow overflow-hidden">
+            <div className="card overflow-hidden">
 
                 <table className="w-full">
 
-                    <thead className="bg-slate-100">
+                    <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 
                         <tr>
 
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Product
 
                             </th>
 
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Category
 
                             </th>
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
                                 Supplier
                             </th>
 
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Buying
 
                             </th>
 
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Selling
 
                             </th>
 
-                            <th className="text-left p-4">
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Quantity
 
                             </th>
 
-                            <th className="text-center p-4">
+                            <th className="text-center p-4 font-bold text-slate-700">
 
                                 Actions
 
@@ -190,38 +200,40 @@ export default function Products() {
 
                         {
 
-                            filteredProducts.map(product => (
+                            filteredProducts.map((product, idx) => (
 
                                 <tr
 
                                     key={product.id}
 
-                                    className="border-t hover:bg-slate-50"
+                                    className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}
 
                                 >
 
-                                    <td className="p-4">
+                                    <td className="p-4 font-medium text-slate-900">
 
                                         {product.name}
 
                                     </td>
 
-                                    <td className="p-4">
+                                    <td className="p-4 text-slate-600">
 
-                                        {product.categoryName}
+                                        <span className="badge badge-info">
+                                            {product.categoryName}
+                                        </span>
 
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 text-slate-600">
                                         {product.supplierName || "—"}
                                     </td>
 
-                                    <td className="p-4">
+                                    <td className="p-4 text-slate-900 font-semibold">
 
                                         KSh {product.buyingPrice}
 
                                     </td>
 
-                                    <td className="p-4">
+                                    <td className="p-4 text-slate-900 font-semibold">
 
                                         KSh {product.sellingPrice}
 
@@ -233,17 +245,15 @@ export default function Products() {
 
                                             product.quantity === 0 ?
 
-                                                <span className="text-red-600 font-bold">
-
+                                                <span className="badge badge-danger">
                                                     Out of Stock
-
                                                 </span>
 
                                                 :
 
                                                 product.quantity <= 10 ?
 
-                                                    <span className="text-orange-500 font-bold">
+                                                    <span className="badge badge-warning">
 
                                                         {product.quantity} (Low)
 
@@ -251,7 +261,7 @@ export default function Products() {
 
                                                     :
 
-                                                    <span className="text-green-600 font-bold">
+                                                    <span className="badge badge-success">
 
                                                         {product.quantity}
 
@@ -267,7 +277,7 @@ export default function Products() {
 
                                             <button
 
-                                                className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
 
                                                 onClick={() => {
 
@@ -277,21 +287,25 @@ export default function Products() {
 
                                                 }}
 
+                                                title="Edit product"
+
                                             >
 
-                                                Edit
+                                                <FaEdit className="text-lg" />
 
                                             </button>
 
                                             <button
 
-                                                className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
 
                                                 onClick={() => deleteProduct(product.id)}
 
+                                                title="Delete product"
+
                                             >
 
-                                                Delete
+                                                <FaTrash className="text-lg" />
 
                                             </button>
 
