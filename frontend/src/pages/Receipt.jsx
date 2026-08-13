@@ -46,6 +46,17 @@ export default function Receipt() {
 
     }
 
+    const currency = window.__PETSHOP_SETTINGS__?.currency || "KSh";
+    const settings = window.__PETSHOP_SETTINGS__ || {};
+
+    useEffect(() => {
+        if (receipt && settings.autoPrintReceipt) {
+            const printTimer = setTimeout(() => window.print(), 200);
+            return () => clearTimeout(printTimer);
+        }
+        return undefined;
+    }, [receipt, settings.autoPrintReceipt]);
+
     if (loading) {
 
         return (
@@ -83,11 +94,14 @@ export default function Receipt() {
             className="max-w-xl mx-auto bg-white shadow rounded-lg p-8"
         >
 
-            <h1 className="text-3xl font-bold text-center mb-6">
-
-                Receipt
-
-            </h1>
+            <div className="text-center mb-6">
+                <h1 className="text-3xl font-bold">{settings.businessName || "Receipt"}</h1>
+                {settings.address && <p className="mt-1 text-sm text-slate-600 whitespace-pre-line">{settings.address}</p>}
+                {(settings.phone || settings.email) && (
+                    <p className="mt-1 text-sm text-slate-600">{[settings.phone, settings.email].filter(Boolean).join(" · ")}</p>
+                )}
+                <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Sales receipt</p>
+            </div>
 
             <div className="space-y-2">
 
@@ -190,13 +204,13 @@ export default function Receipt() {
 
                                 <td className="text-center">
 
-                                    {item.unitPrice.toFixed(2)}
+                                    {currency} {item.unitPrice.toFixed(2)}
 
                                 </td>
 
                                 <td className="text-center">
 
-                                    {item.subtotal.toFixed(2)}
+                                    {currency} {item.subtotal.toFixed(2)}
 
                                 </td>
 
@@ -212,9 +226,14 @@ export default function Receipt() {
 
             <div className="mt-8 text-right text-2xl font-bold">
 
-                Total: KSh {receipt.total.toFixed(2)}
+                Total: {currency} {receipt.total.toFixed(2)}
 
             </div>
+            {Number(settings.taxPercentage) > 0 && (
+                <p className="mt-2 text-right text-sm text-slate-500">
+                    Tax rate: {Number(settings.taxPercentage).toFixed(1)}%
+                </p>
+            )}
             {
                 receipt.qrCode && (
 
@@ -236,6 +255,10 @@ export default function Receipt() {
 
                 )
             }
+
+            {settings.receiptFooter && (
+                <p className="mt-8 border-t pt-4 text-center text-sm text-slate-600 whitespace-pre-line">{settings.receiptFooter}</p>
+            )}
 
             <div className="mt-8 flex justify-end">
 

@@ -6,7 +6,8 @@ export default function DashboardCard({
     icon: Icon,
     color = "text-blue-600",
     trend = null,
-    trendLabel = ""
+    trendLabel = "",
+    noTrendLabel = ""
 }) {
 
     // Color mapping for icon backgrounds
@@ -40,7 +41,7 @@ export default function DashboardCard({
                         </h2>
                     </div>
 
-                    {trend !== null && (
+                    {trend !== null ? (
                         <div className={`flex items-center gap-1 mt-3 ${trendColor}`}>
                             {isTrendPositive ? (
                                 <FaArrowUp className="text-xs" />
@@ -48,10 +49,12 @@ export default function DashboardCard({
                                 <FaArrowDown className="text-xs" />
                             )}
                             <span className="text-xs font-semibold">
-                                {Math.abs(trend)}% {trendLabel}
+                                {Math.abs(trend).toLocaleString(undefined, { maximumFractionDigits: 1 })}% {trendLabel}
                             </span>
                         </div>
-                    )}
+                    ) : noTrendLabel ? (
+                        <p className="mt-3 text-xs font-medium text-slate-400">{noTrendLabel}</p>
+                    ) : null}
 
                 </div>
 

@@ -330,6 +330,7 @@ export default function Sales() {
         0
 
     );
+    const currency = window.__PETSHOP_SETTINGS__?.currency || "KSh";
     const balance =
         Number(amountGiven || 0) - subtotal;
 
@@ -410,7 +411,7 @@ export default function Sales() {
                                         <div className="text-right">
                                             <p className="font-bold text-slate-900">
 
-                                                KSh {product.sellingPrice}
+                                                {currency} {product.sellingPrice}
 
                                             </p>
                                             <p className="text-xs text-emerald-600 font-semibold">
@@ -673,7 +674,7 @@ export default function Sales() {
                                                 : 'bg-red-50 border-red-300 text-red-700'
                                         }`}>
 
-                                            KSh {
+                                            {currency} {
                                                 balance > 0
                                                     ? balance.toFixed(2)
                                                     : "0.00"
@@ -724,7 +725,7 @@ export default function Sales() {
 
                             <span className="font-bold text-slate-900 text-lg">Total:</span>
 
-                            <span className="font-bold text-blue-600 text-2xl">KSh {subtotal.toLocaleString()}</span>
+                            <span className="font-bold text-blue-600 text-2xl">{currency} {subtotal.toLocaleString()}</span>
 
                         </div>
 

@@ -18,6 +18,11 @@ public class DashboardResponse {
     private double purchaseCost;
     private double profit;
 
+    // Month-over-month comparison values. Null means there is no prior-month
+    // data from which a meaningful percentage can be calculated.
+    private Double salesGrowthPercentage;
+    private Double revenueGrowthPercentage;
+
     // =========================
     // INVENTORY
     // =========================
@@ -103,6 +108,22 @@ public class DashboardResponse {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public Double getSalesGrowthPercentage() {
+        return salesGrowthPercentage;
+    }
+
+    public void setSalesGrowthPercentage(Double salesGrowthPercentage) {
+        this.salesGrowthPercentage = salesGrowthPercentage;
+    }
+
+    public Double getRevenueGrowthPercentage() {
+        return revenueGrowthPercentage;
+    }
+
+    public void setRevenueGrowthPercentage(Double revenueGrowthPercentage) {
+        this.revenueGrowthPercentage = revenueGrowthPercentage;
     }
 
     // =========================

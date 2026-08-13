@@ -161,9 +161,7 @@ export default function Dashboard() {
 
                     color="text-blue-600"
 
-                    trend={12}
-
-                    trendLabel="vs last month"
+                    noTrendLabel="No historical comparison data"
 
                 />
 
@@ -177,9 +175,7 @@ export default function Dashboard() {
 
                     color="text-emerald-600"
 
-                    trend={8}
-
-                    trendLabel="growth"
+                    noTrendLabel="No historical comparison data"
 
                 />
 
@@ -193,9 +189,11 @@ export default function Dashboard() {
 
                     color="text-orange-600"
 
-                    trend={-3}
+                    trend={stats.salesGrowthPercentage ?? null}
 
                     trendLabel="vs last month"
+
+                    noTrendLabel="No sales in the previous month"
 
                 />
 
@@ -209,9 +207,11 @@ export default function Dashboard() {
 
                     color="text-purple-600"
 
-                    trend={15}
+                    trend={stats.revenueGrowthPercentage ?? null}
 
-                    trendLabel="increase"
+                    trendLabel="vs last month"
+
+                    noTrendLabel="No revenue in the previous month"
 
                 />
 

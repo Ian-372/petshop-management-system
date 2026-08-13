@@ -47,7 +47,10 @@ export default function Settings() {
         try {
             setError(null);
             const data = await getSettings();
-            setSettings(normalizeSettings(data));
+            const normalized = normalizeSettings(data);
+            setSettings(normalized);
+            window.__PETSHOP_SETTINGS__ = normalized;
+            window.dispatchEvent(new CustomEvent("petshop-settings-changed", { detail: normalized }));
         } catch (error) {
             const message = error.response?.data?.message || error.message || "Failed to load settings.";
             setError(message);
@@ -79,7 +82,10 @@ export default function Settings() {
             };
 
             const updated = await updateSettings(payload);
-            setSettings(normalizeSettings(updated));
+            const normalized = normalizeSettings(updated);
+            setSettings(normalized);
+            window.__PETSHOP_SETTINGS__ = normalized;
+            window.dispatchEvent(new CustomEvent("petshop-settings-changed", { detail: normalized }));
             setSuccess("Settings saved successfully.");
         } catch (error) {
             const message = error.response?.data?.message || error.message || "Failed to save settings.";
@@ -213,7 +219,7 @@ export default function Settings() {
 
                         <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
                             <p className="text-xs uppercase tracking-[0.15em] text-blue-700 font-semibold">Receipt footer</p>
-                            <p className="mt-2 text-sm text-slate-700">This text appears at the bottom of printed or digital receipts.</p>
+                            <p className="mt-2 text-sm text-slate-700">This text, the store profile, currency, and tax rate appear on printed or digital receipts.</p>
                         </div>
 
                         <label className="space-y-2 md:col-span-2">

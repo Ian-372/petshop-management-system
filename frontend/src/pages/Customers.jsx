@@ -51,11 +51,10 @@ export default function Customers() {
     }
     async function deleteCustomer(id) {
 
-        const confirmed = window.confirm(
-
-            "Are you sure you want to delete this customer?"
-
-        );
+        const requireDeleteConfirmation = window.__PETSHOP_SETTINGS__?.deleteConfirmation !== false;
+        const confirmed = requireDeleteConfirmation
+            ? window.confirm("Are you sure you want to delete this customer?")
+            : true;
 
         if (!confirmed) {
 

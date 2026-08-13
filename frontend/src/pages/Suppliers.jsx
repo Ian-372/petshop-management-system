@@ -49,11 +49,10 @@ export default function Suppliers() {
 
     async function deleteSupplier(id) {
 
-        const confirmed = window.confirm(
-
-            "Delete this supplier?"
-
-        );
+        const requireDeleteConfirmation = window.__PETSHOP_SETTINGS__?.deleteConfirmation !== false;
+        const confirmed = requireDeleteConfirmation
+            ? window.confirm("Delete this supplier?")
+            : true;
 
         if (!confirmed) {
 

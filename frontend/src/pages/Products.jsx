@@ -54,11 +54,10 @@ export default function Products() {
     }
     async function deleteProduct(id) {
 
-        const confirmed = window.confirm(
-
-            "Delete this product?"
-
-        );
+        const requireDeleteConfirmation = window.__PETSHOP_SETTINGS__?.deleteConfirmation !== false;
+        const confirmed = requireDeleteConfirmation
+            ? window.confirm("Delete this product?")
+            : true;
 
         if (!confirmed) {
 
