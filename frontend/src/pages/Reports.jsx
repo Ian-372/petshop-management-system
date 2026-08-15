@@ -1,409 +1,76 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import ErrorAlert from "../components/ErrorAlert";
-import { FaChartLine, FaCreditCard, FaBoxes, FaShoppingCart } from "react-icons/fa";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-} from "chart.js";
+import { FaBoxOpen, FaChartLine, FaMoneyBillWave, FaSyncAlt, FaUsers, FaReceipt, FaShoppingBag } from "react-icons/fa";
 
-import { Line } from "react-chartjs-2";
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+const currency = window.__PETSHOP_SETTINGS__?.currency || "KSh";
+const money = value => `${currency} ${Number(value || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const dayKey = date => date ? new Date(date).toLocaleDateString("en-CA") : "";
+const displayDate = date => date ? new Intl.DateTimeFormat("en-KE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(date)) : "-";
+
+function StatCard({ label, value, hint, icon: Icon, tone = "blue" }) {
+    const tones = { blue: "bg-blue-50 text-blue-600", emerald: "bg-emerald-50 text-emerald-600", violet: "bg-violet-50 text-violet-600", amber: "bg-amber-50 text-amber-600" };
+    return <div className="card p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-medium text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>{hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}</div><div className={`rounded-xl p-3 text-xl ${tones[tone]}`}><Icon /></div></div></div>;
+}
 
 export default function Reports() {
-
-    const [summary, setSummary] = useState(null);
-
+    const [summary, setSummary] = useState({ totalSales: 0, totalRevenue: 0, totalItemsSold: 0, averageSale: 0 });
     const [dailySales, setDailySales] = useState([]);
-
     const [products, setProducts] = useState([]);
-
+    const [customers, setCustomers] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [tab, setTab] = useState("overview");
+    const [query, setQuery] = useState("");
+    const [range, setRange] = useState("all");
+    const [selectedDate, setSelectedDate] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
-    const revenueChartData = {
 
-        labels: dailySales
-            .slice()
-            .reverse()
-            .map(day => day.date),
-
-        datasets: [
-
-            {
-
-                label: "Revenue (KSh)",
-
-                data: dailySales
-                    .slice()
-                    .reverse()
-                    .map(day => day.revenue),
-
-                borderColor: "#2563eb",
-
-                backgroundColor: "rgba(37,99,235,0.2)",
-
-                fill: true,
-
-                tension: 0.4
-
-            }
-
-        ]
-
-    };
-
-    useEffect(() => {
-
-        loadReports();
-
+    const loadReports = useCallback(async (silent = false) => {
+        if (silent) setRefreshing(true); else setLoading(true);
+        try {
+            const [summaryRes, dailyRes, customerRes, productRes, transactionRes] = await Promise.all([
+                api.get("/reports/summary"), api.get("/reports/daily"), api.get("/customers"), api.get("/products"), api.get("/reports/transactions")
+            ]);
+            setSummary(summaryRes.data || {}); setDailySales(dailyRes.data || []); setCustomers(customerRes.data || []); setProducts(productRes.data || []); setTransactions(transactionRes.data || []); setError(null);
+        } catch (err) { setError(err.response?.data?.message || err.message || "Failed to load reports"); }
+        finally { setLoading(false); setRefreshing(false); }
     }, []);
 
-    async function loadReports() {
-
-        try {
-
-            const [summaryRes, dailyRes, productRes] = await Promise.all([
-
-                api.get("/reports/summary"),
-
-                api.get("/reports/daily"),
-
-                api.get("/reports/products")
-
-            ]);
-
-            setSummary(summaryRes.data);
-
-            setDailySales(dailyRes.data);
-
-            setProducts(productRes.data);
-            setError(null);
-
-        }
-
-        catch (error) {
-
-            const errorMessage = error.response?.data?.message || error.message || "Failed to load reports";
-            setError(errorMessage);
-            console.error(errorMessage);
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
-    }
-
-    if (loading) {
-
-        return (
-            <div className="space-y-8">
-                {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-                <div>
-                    <h1 className="text-4xl font-bold text-slate-900 mb-2">Reports</h1>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="card p-6">
-                            <div className="space-y-4">
-                                <div className="skeleton h-4 w-24"></div>
-                                <div className="skeleton h-10 w-32"></div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="card p-6">
-                    <div className="skeleton h-6 w-32 mb-6"></div>
-                    <div className="skeleton h-80 w-full"></div>
-                </div>
-            </div>
-        );
-
-    }
-
-    return (
-
-        <div className="space-y-8 pb-8">
-
-            {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-
-            <div>
-                <h1 className="text-4xl font-bold text-slate-900 mb-1">
-                    Reports
-                </h1>
-                <p className="text-slate-500 text-sm">
-                    Comprehensive business analytics and insights
-                </p>
-            </div>
-
-            {/* KPI CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-
-                <div className="card p-6 group">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500 mb-1">Total Sales</p>
-                            <h2 className="text-4xl font-bold text-slate-900">
-                                {summary.totalSales.toLocaleString()}
-                            </h2>
-                        </div>
-                        <div className="bg-blue-100 text-blue-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                            <FaShoppingCart />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card p-6 group">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500 mb-1">Total Revenue</p>
-                            <h2 className="text-4xl font-bold text-slate-900">
-                                KSh {(summary.totalRevenue / 1000).toFixed(0)}K
-                            </h2>
-                            <p className="text-xs text-slate-500 mt-2">
-                                {(summary.totalRevenue).toLocaleString()}
-                            </p>
-                        </div>
-                        <div className="bg-emerald-100 text-emerald-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                            <FaCreditCard />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card p-6 group">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500 mb-1">Items Sold</p>
-                            <h2 className="text-4xl font-bold text-slate-900">
-                                {summary.totalItemsSold.toLocaleString()}
-                            </h2>
-                        </div>
-                        <div className="bg-orange-100 text-orange-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                            <FaBoxes />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card p-6 group">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500 mb-1">Average Sale</p>
-                            <h2 className="text-4xl font-bold text-slate-900">
-                                KSh {summary.averageSale.toFixed(0)}
-                            </h2>
-                        </div>
-                        <div className="bg-purple-100 text-purple-600 text-2xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                            <FaChartLine />
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {/* REVENUE CHART */}
-            <div className="card p-6">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                        Revenue Trend
-                    </h2>
-                    <p className="text-sm text-slate-500">
-                        Daily revenue performance over time
-                    </p>
-                </div>
-                <div className="bg-gradient-to-b from-blue-50/50 to-transparent p-4 rounded-xl">
-                    <Line data={revenueChartData} options={{
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#64748B',
-                                    font: { weight: '500' }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                ticks: { color: '#94A3B8' },
-                                grid: { color: '#E2E8F0' }
-                            },
-                            x: {
-                                ticks: { color: '#94A3B8' },
-                                grid: { color: '#E2E8F0' }
-                            }
-                        }
-                    }} />
-                </div>
-            </div>
-
-            {/* DAILY SALES TABLE */}
-            <div className="card overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                        Daily Sales
-                    </h2>
-                    <p className="text-sm text-slate-500">
-                        Sales activity for each day
-                    </p>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-
-                        <thead>
-
-                            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-
-                                <th className="text-left p-4 font-bold text-slate-700">Date</th>
-
-                                <th className="text-center p-4 font-bold text-slate-700">Number of Sales</th>
-
-                                <th className="text-center p-4 font-bold text-slate-700">Revenue</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {
-
-                                dailySales.map((day, idx) => (
-
-                                    <tr key={day.date} className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
-
-                                        <td className="p-4 font-medium text-slate-900">{day.date}</td>
-
-                                        <td className="text-center p-4 text-slate-600">
-
-                                            <span className="badge badge-info">
-                                                {day.numberOfSales}
-                                            </span>
-
-                                        </td>
-
-                                        <td className="text-center p-4 font-semibold text-slate-900">
-
-                                            KSh {day.revenue.toFixed(2)}
-
-                                        </td>
-
-                                    </tr>
-
-                                ))
-
-                            }
-
-                        </tbody>
-
-                    </table>
-                </div>
-
-            </div>
-
-            {/* TOP PRODUCTS TABLE */}
-            <div className="card overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                        Top Selling Products
-                    </h2>
-                    <p className="text-sm text-slate-500">
-                        Best performing products by revenue
-                    </p>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-
-                        <thead>
-
-                            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-
-                                <th className="text-left p-4 font-bold text-slate-700">
-
-                                    Product
-
-                                </th>
-
-                                <th className="text-center p-4 font-bold text-slate-700">
-
-                                    Quantity Sold
-
-                                </th>
-
-                                <th className="text-center p-4 font-bold text-slate-700">
-
-                                    Revenue
-
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {
-
-                                products.map((product, idx) => (
-
-                                    <tr key={product.productId} className={`border-t border-slate-100 transition-colors hover:bg-blue-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
-
-                                        <td className="p-4 font-medium text-slate-900">
-
-                                            {product.productName}
-
-                                        </td>
-
-                                        <td className="text-center p-4 text-slate-600">
-
-                                            <span className="badge badge-success">
-                                                {product.quantitySold}
-                                            </span>
-
-                                        </td>
-
-                                        <td className="text-center p-4 font-semibold text-slate-900">
-
-                                            KSh {product.revenueGenerated.toFixed(2)}
-
-                                        </td>
-
-                                    </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-        </div>
-
-    );
-
+    useEffect(() => {
+        const initialRequest = window.setTimeout(() => loadReports(), 0);
+        return () => window.clearTimeout(initialRequest);
+    }, [loadReports]);
+    useEffect(() => { const interval = window.setInterval(() => loadReports(true), 30000); return () => window.clearInterval(interval); }, [loadReports]);
+
+    const filteredTransactions = useMemo(() => {
+        const now = new Date(); const start = new Date(now); start.setHours(0, 0, 0, 0);
+        if (range === "week") start.setDate(start.getDate() - 6); if (range === "month") start.setDate(1);
+        const needle = query.trim().toLowerCase();
+        return transactions.filter(sale => {
+            const items = (sale.items || []).map(item => item.productName).join(" ");
+            const haystack = `${sale.id} ${sale.customerName || ""} ${sale.phoneNumber || ""} ${sale.paymentMethod || ""} ${items}`.toLowerCase();
+            const saleDay = sale.saleDate?.slice(0, 10) || dayKey(sale.saleDate);
+            const matchesRange = range === "all" || (range === "date" ? saleDay === selectedDate : new Date(sale.saleDate) >= start);
+            return matchesRange && (!needle || haystack.includes(needle));
+        });
+    }, [transactions, range, query, selectedDate]);
+    const todaySales = useMemo(() => transactions.filter(sale => (sale.saleDate?.slice(0, 10) || dayKey(sale.saleDate)) === dayKey(new Date())), [transactions]);
+    const todayRevenue = todaySales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+    const topProducts = useMemo(() => {
+        const totals = new Map(); transactions.forEach(sale => (sale.items || []).forEach(item => { const old = totals.get(item.productName) || { name: item.productName, quantity: 0, revenue: 0 }; totals.set(item.productName, { ...old, quantity: old.quantity + Number(item.quantity || 0), revenue: old.revenue + Number(item.subtotal || 0) }); }));
+        return [...totals.values()].sort((a, b) => b.revenue - a.revenue);
+    }, [transactions]);
+    if (loading) return <div className="space-y-6"><div className="skeleton h-12 w-64" /><div className="grid grid-cols-1 gap-5 md:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="card p-5"><div className="skeleton h-24 w-full" /></div>)}</div><div className="card p-6"><div className="skeleton h-96 w-full" /></div></div>;
+    const tabs = [["overview", "Overview", FaChartLine], ["sales", "Sales", FaReceipt], ["customers", "Customers", FaUsers], ["products", "Products", FaBoxOpen]];
+    return <div className="space-y-6 pb-10">
+        {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-sm font-semibold uppercase tracking-wider text-blue-600">Live business intelligence</p><h1 className="mt-1 text-4xl font-bold text-slate-900">Reports centre</h1><p className="mt-1 text-sm text-slate-500">Sales, customers and product performance in one place. Refreshes every 30 seconds.</p></div><button onClick={() => loadReports(true)} disabled={refreshing} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-60"><FaSyncAlt className={refreshing ? "animate-spin" : ""} /> Refresh data</button></div>
+        <div className="flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2">{tabs.map(([id, label, Icon]) => <button key={id} onClick={() => setTab(id)} className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${tab === id ? "bg-slate-900 text-white shadow" : "text-slate-600 hover:bg-slate-100"}`}><Icon /> {label}</button>)}</div>
+        {tab === "overview" && <><div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4"><StatCard label="Today's revenue" value={money(todayRevenue)} hint={`${todaySales.length} transactions today`} icon={FaMoneyBillWave} tone="emerald" /><StatCard label="All sales" value={Number(summary.totalSales || 0).toLocaleString()} hint="Completed transaction records" icon={FaReceipt} /><StatCard label="Items sold" value={Number(summary.totalItemsSold || 0).toLocaleString()} hint="Across all recorded sales" icon={FaShoppingBag} tone="amber" /><StatCard label="Average sale" value={money(summary.averageSale)} hint="Average transaction value" icon={FaChartLine} tone="violet" /></div><div className="grid grid-cols-1 gap-6 xl:grid-cols-5"><section className="card overflow-hidden xl:col-span-3"><div className="border-b border-slate-100 p-6"><h2 className="text-xl font-bold text-slate-900">Daily sales performance</h2><p className="text-sm text-slate-500">Select a date to view every sale made that day.</p></div><div className="overflow-x-auto"><table className="w-full text-sm"><thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500"><tr><th className="p-4">Date</th><th className="p-4 text-center">Sales</th><th className="p-4 text-right">Revenue</th></tr></thead><tbody>{dailySales.length ? dailySales.map(day => <tr key={day.date} className="border-t border-slate-100"><td className="p-4 font-medium"><button onClick={() => { setSelectedDate(day.date); setRange("date"); setTab("sales"); }} className="font-semibold text-blue-700 underline-offset-2 hover:text-blue-900 hover:underline">{day.date}</button></td><td className="p-4 text-center"><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{day.numberOfSales}</span></td><td className="p-4 text-right font-semibold text-slate-900">{money(day.revenue)}</td></tr>) : <tr><td colSpan="3" className="p-8 text-center text-slate-500">No sales recorded yet.</td></tr>}</tbody></table></div></section><section className="card overflow-hidden xl:col-span-2"><div className="border-b border-slate-100 p-6"><h2 className="text-xl font-bold text-slate-900">Top products</h2><p className="text-sm text-slate-500">Best sellers by revenue</p></div><div className="divide-y divide-slate-100">{topProducts.slice(0, 5).map((item, index) => <div key={item.name} className="flex items-center gap-3 p-4"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">{index + 1}</span><div className="min-w-0 flex-1"><p className="truncate font-semibold text-slate-800">{item.name}</p><p className="text-xs text-slate-500">{item.quantity} units sold</p></div><p className="text-sm font-bold text-slate-900">{money(item.revenue)}</p></div>)}{!topProducts.length && <p className="p-8 text-center text-sm text-slate-500">No product sales yet.</p>}</div></section></div></>}
+        {tab === "sales" && <section className="card overflow-hidden"><div className="flex flex-col gap-4 border-b border-slate-100 p-6 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="text-xl font-bold text-slate-900">Sales report</h2><p className="text-sm text-slate-500">{range === "date" ? `All customer sales for ${selectedDate}.` : "Every transaction, customer, item, time and payment detail."}</p></div><div className="flex flex-col gap-2 sm:flex-row"><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search customer, product or sale #" className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" /><select value={range} onChange={e => setRange(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400">{selectedDate && <option value="date">Selected date: {selectedDate}</option>}<option value="today">Today</option><option value="week">Last 7 days</option><option value="month">This month</option><option value="all">All time</option></select></div></div><div className="overflow-x-auto"><table className="min-w-[1100px] w-full text-sm"><thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500"><tr><th className="p-4">Sale / time</th><th className="p-4">Customer</th><th className="p-4">Items bought</th><th className="p-4">Payment</th><th className="p-4 text-right">Total spent</th></tr></thead><tbody>{filteredTransactions.map(sale => <tr key={sale.id} className="border-t border-slate-100 align-top hover:bg-blue-50/40"><td className="p-4"><p className="font-bold text-slate-800">#{sale.id}</p><p className="mt-1 whitespace-nowrap text-xs text-slate-500">{displayDate(sale.saleDate)}</p></td><td className="p-4"><p className="font-semibold text-slate-800">{sale.customerName || "Walk-In"}</p><p className="mt-1 text-xs text-slate-500">{sale.phoneNumber || "No phone recorded"}</p></td><td className="p-4"><div className="space-y-1">{(sale.items || []).map((item, i) => <p key={`${item.productName}-${i}`} className="text-slate-700"><span className="font-medium">{item.productName}</span> <span className="text-slate-500">x {item.quantity} / {money(item.subtotal)}</span></p>)}</div></td><td className="p-4"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">{sale.paymentMethod || "-"}</span><p className={`mt-2 text-xs font-semibold ${sale.paymentStatus === "PAID" ? "text-emerald-600" : sale.paymentStatus === "DEBT" ? "text-amber-600" : "text-slate-500"}`}>{sale.paymentStatus || "-"}</p></td><td className="p-4 text-right font-bold text-slate-900">{money(sale.total)}</td></tr>)}{!filteredTransactions.length && <tr><td colSpan="5" className="p-10 text-center text-slate-500">No sales match this report filter.</td></tr>}</tbody></table></div></section>}
+        {tab === "customers" && <section className="card overflow-hidden"><div className="border-b border-slate-100 p-6"><h2 className="text-xl font-bold text-slate-900">Customer report</h2><p className="text-sm text-slate-500">Customer value, loyalty and outstanding balances.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-sm"><thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500"><tr><th className="p-4">Customer</th><th className="p-4">Contact</th><th className="p-4 text-right">Total spent</th><th className="p-4 text-right">Outstanding debt</th><th className="p-4 text-center">Loyalty points</th></tr></thead><tbody>{[...customers].sort((a,b) => Number(b.totalSpent || 0) - Number(a.totalSpent || 0)).map(customer => <tr key={customer.id} className="border-t border-slate-100"><td className="p-4 font-semibold text-slate-800">{customer.name}</td><td className="p-4 text-slate-600">{customer.phone || customer.email || "-"}</td><td className="p-4 text-right font-semibold">{money(customer.totalSpent)}</td><td className="p-4 text-right text-amber-700">{money(customer.totalDebt)}</td><td className="p-4 text-center"><span className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700">{customer.loyaltyPoints || 0}</span></td></tr>)}{!customers.length && <tr><td colSpan="5" className="p-10 text-center text-slate-500">No customers registered yet.</td></tr>}</tbody></table></div></section>}
+        {tab === "products" && <section className="card overflow-hidden"><div className="border-b border-slate-100 p-6"><h2 className="text-xl font-bold text-slate-900">Product report</h2><p className="text-sm text-slate-500">Current stock alongside actual sales performance.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-sm"><thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500"><tr><th className="p-4">Product</th><th className="p-4">Category</th><th className="p-4 text-center">Stock on hand</th><th className="p-4 text-center">Units sold</th><th className="p-4 text-right">Sales revenue</th></tr></thead><tbody>{products.map(product => { const stat = topProducts.find(item => item.name === product.name); return <tr key={product.id} className="border-t border-slate-100"><td className="p-4 font-semibold text-slate-800">{product.name}</td><td className="p-4 text-slate-600">{product.categoryName || "Uncategorised"}</td><td className="p-4 text-center"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${Number(product.quantity) <= 5 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{product.quantity}</span></td><td className="p-4 text-center text-slate-700">{stat?.quantity || 0}</td><td className="p-4 text-right font-semibold text-slate-900">{money(stat?.revenue)}</td></tr>})}{!products.length && <tr><td colSpan="5" className="p-10 text-center text-slate-500">No products found.</td></tr>}</tbody></table></div></section>}
+    </div>;
 }

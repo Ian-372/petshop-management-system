@@ -59,7 +59,7 @@ export default function App() {
                 }
 
                 const alerts = items
-                    .filter((item) => item.quantity <= 5 || item.quantity === 0)
+                    .filter((item) => item.quantity <= 10)
                     .map((item) => ({
                         id: `stock-${item.productId}`,
                         productName: item.productName,
@@ -127,7 +127,7 @@ export default function App() {
     }, [appSettings?.salesNotifications]);
 
     const visibleAlerts = useMemo(
-        () => (appSettings?.lowStockAlerts === false ? [] : stockAlerts.filter((item) => item.quantity <= 5 && item.quantity >= 0)),
+        () => (appSettings?.lowStockAlerts === false ? [] : stockAlerts.filter((item) => item.quantity <= 10 && item.quantity >= 0)),
         [appSettings, stockAlerts]
     );
 

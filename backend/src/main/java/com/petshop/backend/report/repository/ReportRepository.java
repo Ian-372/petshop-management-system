@@ -4,6 +4,7 @@ import com.petshop.backend.report.dto.DailySalesResponse;
 import com.petshop.backend.report.dto.ProductSalesResponse;
 import com.petshop.backend.sale.entity.Sale;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,9 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Sale, Long> {
+
+    @EntityGraph(attributePaths = {"customer", "saleItems", "saleItems.product"})
+    List<Sale> findAllByOrderBySaleDateDesc();
 
     // ==========================
     // SALES SUMMARY
