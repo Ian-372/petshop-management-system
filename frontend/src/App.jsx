@@ -4,11 +4,14 @@ import StockAlertToast from "./components/StockAlertToast";
 import api from "./services/api";
 import { getSettings } from "./services/settingsService";
 import SalesActivityToast from "./components/SalesActivityToast";
+import DebtAlertToast from "./components/DebtAlertToast";
 
 export default function App() {
     const [stockAlerts, setStockAlerts] = useState([]);
     const [appSettings, setAppSettings] = useState(null);
     const [salesNotifications, setSalesNotifications] = useState([]);
+    const [debtAlerts, setDebtAlerts] = useState([]);
+    const [dismissedDebtAlertIds, setDismissedDebtAlertIds] = useState([]);
 
     useEffect(() => {
         let cancelled = false;
@@ -126,6 +129,27 @@ export default function App() {
         };
     }, [appSettings?.salesNotifications]);
 
+    useEffect(() => {
+        let cancelled = false;
+        async function loadDebtAlerts() {
+            if (appSettings?.debtAlerts === false) { setDebtAlerts([]); return; }
+            try {
+                const [customersResponse, transactionsResponse] = await Promise.all([api.get("/customers"), api.get("/reports/transactions")]);
+                if (cancelled) return;
+                const now = new Date();
+                const alerts = (customersResponse.data || []).filter(customer => Number(customer.totalDebt || 0) > 0).map(customer => {
+                    const oldestDebtSale = (transactionsResponse.data || []).filter(sale => sale.customerId === customer.id && sale.paymentStatus === "DEBT").reduce((oldest, sale) => !oldest || new Date(sale.saleDate) < new Date(oldest.saleDate) ? sale : oldest, null);
+                    const ageDays = oldestDebtSale ? Math.max(0, Math.floor((now - new Date(oldestDebtSale.saleDate)) / 86400000)) : 0;
+                    return { id: `debt-${customer.id}-${Number(customer.totalDebt)}`, customerName: customer.name, debt: customer.totalDebt, ageDays, nearLimit: Number(customer.totalDebt) >= 1600, longOutstanding: ageDays >= 30 };
+                }).filter(alert => alert.nearLimit || alert.longOutstanding);
+                setDebtAlerts(alerts);
+            } catch (error) { console.error("Debt alert check failed:", error); }
+        }
+        loadDebtAlerts();
+        const timer = setInterval(loadDebtAlerts, 60000);
+        return () => { cancelled = true; clearInterval(timer); };
+    }, [appSettings?.debtAlerts]);
+
     const visibleAlerts = useMemo(
         () => (appSettings?.lowStockAlerts === false ? [] : stockAlerts.filter((item) => item.quantity <= 10 && item.quantity >= 0)),
         [appSettings, stockAlerts]
@@ -143,6 +167,11 @@ export default function App() {
                 notifications={salesNotifications}
                 currency={appSettings?.currency || "KSh"}
                 onClose={(id) => setSalesNotifications((previous) => previous.filter((notification) => notification.id !== id))}
+            />
+            <DebtAlertToast
+                notifications={appSettings?.debtAlerts === false ? [] : debtAlerts.filter((alert) => !dismissedDebtAlertIds.includes(alert.id))}
+                currency={appSettings?.currency || "KSh"}
+                onClose={(id) => setDismissedDebtAlertIds((previous) => [...previous, id])}
             />
         </>
     );

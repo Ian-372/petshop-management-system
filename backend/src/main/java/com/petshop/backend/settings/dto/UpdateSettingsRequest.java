@@ -18,6 +18,7 @@ public class UpdateSettingsRequest {
     private Boolean lowStockAlerts;
     private Boolean deleteConfirmation;
     private Boolean salesNotifications;
+    private Boolean debtAlerts;
 
     public UpdateSettingsRequest() {
     }
@@ -109,5 +110,9 @@ public class UpdateSettingsRequest {
     public void setSalesNotifications(Boolean salesNotifications) {
         this.salesNotifications = salesNotifications;
     }
+
+    public Boolean getDebtAlerts() { return debtAlerts; }
+
+    public void setDebtAlerts(Boolean debtAlerts) { this.debtAlerts = debtAlerts; }
 
 }

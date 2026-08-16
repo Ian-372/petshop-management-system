@@ -32,6 +32,7 @@ public class SettingsServiceImpl implements SettingsService {
         settings.setLowStockAlerts(true);
         settings.setDeleteConfirmation(true);
         settings.setSalesNotifications(true);
+        settings.setDebtAlerts(true);
 
         return settings;
     }
@@ -67,6 +68,7 @@ public class SettingsServiceImpl implements SettingsService {
         settings.setLowStockAlerts(request.getLowStockAlerts() != null ? request.getLowStockAlerts() : settings.getLowStockAlerts());
         settings.setDeleteConfirmation(request.getDeleteConfirmation() != null ? request.getDeleteConfirmation() : settings.getDeleteConfirmation());
         settings.setSalesNotifications(request.getSalesNotifications() != null ? request.getSalesNotifications() : settings.getSalesNotifications());
+        settings.setDebtAlerts(request.getDebtAlerts() != null ? request.getDebtAlerts() : settings.getDebtAlerts());
 
         settings = settingsRepository.save(settings);
 
@@ -92,6 +94,7 @@ public class SettingsServiceImpl implements SettingsService {
         response.setLowStockAlerts(settings.getLowStockAlerts());
         response.setDeleteConfirmation(settings.getDeleteConfirmation());
         response.setSalesNotifications(settings.getSalesNotifications());
+        response.setDebtAlerts(settings.getDebtAlerts());
 
         return response;
     }

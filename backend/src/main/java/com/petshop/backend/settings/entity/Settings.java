@@ -46,6 +46,8 @@ public class Settings {
 
     private Boolean salesNotifications;
 
+    private Boolean debtAlerts;
+
     public Settings() {
     }
 
@@ -144,4 +146,8 @@ public class Settings {
     public void setSalesNotifications(Boolean salesNotifications) {
         this.salesNotifications = salesNotifications;
     }
+
+    public Boolean getDebtAlerts() { return debtAlerts; }
+
+    public void setDebtAlerts(Boolean debtAlerts) { this.debtAlerts = debtAlerts; }
 }

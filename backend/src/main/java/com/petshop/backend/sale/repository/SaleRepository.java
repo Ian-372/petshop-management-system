@@ -17,4 +17,9 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             Long customerId,
             String paymentMethod
     );
+
+    List<Sale> findByCustomerIdAndPaymentMethodOrderBySaleDateAsc(
+            Long customerId,
+            String paymentMethod
+    );
 }

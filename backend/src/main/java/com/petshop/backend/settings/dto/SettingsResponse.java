@@ -20,6 +20,7 @@ public class SettingsResponse {
     private Boolean lowStockAlerts;
     private Boolean deleteConfirmation;
     private Boolean salesNotifications;
+    private Boolean debtAlerts;
 
     public SettingsResponse() {
     }
@@ -119,5 +120,9 @@ public class SettingsResponse {
     public void setSalesNotifications(Boolean salesNotifications) {
         this.salesNotifications = salesNotifications;
     }
+
+    public Boolean getDebtAlerts() { return debtAlerts; }
+
+    public void setDebtAlerts(Boolean debtAlerts) { this.debtAlerts = debtAlerts; }
 
 }

@@ -221,6 +221,14 @@ public class SaleServiceImpl implements SaleService {
 
             balance = total - amountGiven;
 
+            final double debtLimit = 2000.0;
+            if (customer.getTotalDebt() + balance > debtLimit) {
+                throw new RuntimeException(
+                        "This sale would exceed the customer's KSh 2,000 debt limit. "
+                                + "Current debt: KSh " + customer.getTotalDebt()
+                                + ", new balance: KSh " + balance + ".");
+            }
+
         } else if ("CASH".equalsIgnoreCase(
                 request.getPaymentMethod())) {
 
@@ -252,6 +260,7 @@ public class SaleServiceImpl implements SaleService {
 
         sale.setAmountGiven(amountGiven);
         sale.setBalance(balance);
+        sale.setOutstandingDebt("DEBIT".equalsIgnoreCase(request.getPaymentMethod()) ? balance : 0.0);
         sale.setSaleDate(LocalDateTime.now());
 
         /*
@@ -353,32 +362,6 @@ public class SaleServiceImpl implements SaleService {
 
                 customerRepository.save(customer);
             }
-            /*
-             * Loyalty points.
-             */
-            customer.setLoyaltyPoints(
-                    customer.getLoyaltyPoints()
-                            + (int) (total / 100));
-
-            /*
-             * DEBIT CUSTOMER
-             *
-             * Add only the unpaid portion
-             * of this sale.
-             */
-
-            if ("DEBIT".equalsIgnoreCase(
-                    request.getPaymentMethod())) {
-
-                customer.setTotalDebt(
-                        customer.getTotalDebt() +
-                                balance);
-            }
-
-            customer.setLastPurchaseDate(
-                    LocalDateTime.now());
-
-            customerRepository.save(customer);
         }
 
         /*

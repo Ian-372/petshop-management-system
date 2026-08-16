@@ -14,6 +14,7 @@ const defaultSettings = {
     lowStockAlerts: true,
     deleteConfirmation: true,
     salesNotifications: true,
+    debtAlerts: true,
 };
 
 function normalizeSettings(data = {}) {
@@ -29,6 +30,7 @@ function normalizeSettings(data = {}) {
         lowStockAlerts: Boolean(data.lowStockAlerts),
         deleteConfirmation: Boolean(data.deleteConfirmation),
         salesNotifications: Boolean(data.salesNotifications),
+        debtAlerts: data.debtAlerts !== false,
     };
 }
 
@@ -297,6 +299,21 @@ export default function Settings() {
                                 className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.salesNotifications ? "bg-violet-500" : "bg-slate-300"}`}
                             >
                                 <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.salesNotifications ? "translate-x-6" : "translate-x-1"}`} />
+                            </button>
+                        </label>
+
+                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <div>
+                                <p className="font-semibold text-slate-900">Debt reminder alerts</p>
+                                <p className="text-sm text-slate-500">Notify the admin about customers near the KSh 2,000 limit or carrying debt for 30 days or more.</p>
+                            </div>
+                            <button
+                                type="button"
+                                aria-pressed={settings.debtAlerts}
+                                onClick={() => setSettings((prev) => ({ ...prev, debtAlerts: !prev.debtAlerts }))}
+                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.debtAlerts ? "bg-red-500" : "bg-slate-300"}`}
+                            >
+                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.debtAlerts ? "translate-x-6" : "translate-x-1"}`} />
                             </button>
                         </label>
                     </div>

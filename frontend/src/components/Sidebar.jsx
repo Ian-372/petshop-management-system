@@ -5,7 +5,6 @@ import {
     FaUsers,
     FaFileAlt,
     FaCog,
-    FaClipboardList,
     FaWarehouse
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
@@ -14,7 +13,6 @@ const menuItems = [
     { name: "Dashboard", path: "/", icon: <FaChartPie /> },
     { name: "Products", path: "/products", icon: <FaBoxOpen /> },
     { name: "Stock", path: "/stock", icon: <FaWarehouse /> },
-    { name: "Purchases", path: "/purchases", icon: <FaClipboardList /> },
     { name: "Sales", path: "/sales", icon: <FaShoppingCart /> },
     { name: "Customers", path: "/customers", icon: <FaUsers /> },
     { name: "Reports", path: "/reports", icon: <FaFileAlt /> },

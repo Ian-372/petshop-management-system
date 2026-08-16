@@ -66,13 +66,16 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private SalesTransactionResponse toTransactionResponse(Sale sale) {
-        String customerName = sale.getCustomer() == null ? "Walk-In" : sale.getCustomer().getName();
+        boolean isRegisteredCustomer = sale.getCustomer() != null;
+        String customerName = isRegisteredCustomer ? sale.getCustomer().getName() : "Walk-In";
+        String customerType = isRegisteredCustomer ? "Registered" : "Walk-in";
         return new SalesTransactionResponse(
-                sale.getId(), customerName, sale.getPhoneNumber(), sale.getSaleDate(),
-                sale.getTotal(), sale.getBalance(), sale.getPaymentMethod(), sale.getPaymentStatus(),
+                sale.getId(), isRegisteredCustomer ? sale.getCustomer().getId() : null,
+                customerName, customerType, sale.getPhoneNumber(), sale.getSaleDate(),
+                sale.getTotal(), sale.getBalance(), sale.getOutstandingDebt(), sale.getPaymentMethod(), sale.getPaymentStatus(),
                 sale.getSaleItems().stream()
                         .map(item -> new SalesTransactionItemResponse(
-                                item.getProduct().getName(), item.getQuantity(),
+                                item.getProduct().getId(), item.getProduct().getName(), item.getQuantity(),
                                 item.getUnitPrice(), item.getProduct().getBuyingPrice(),
                                 item.getSubtotal()))
                         .toList());

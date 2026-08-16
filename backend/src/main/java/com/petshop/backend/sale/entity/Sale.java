@@ -27,6 +27,9 @@ public class Sale {
     @Column(nullable = false)
     private Double balance = 0.0;
 
+    @Column(nullable = false)
+    private Double outstandingDebt = 0.0;
+
     public Double getAmountGiven() {
         return amountGiven;
     }
@@ -42,6 +45,10 @@ public class Sale {
     public void setBalance(Double balance) {
         this.balance = balance;
     }
+
+    public Double getOutstandingDebt() { return outstandingDebt; }
+
+    public void setOutstandingDebt(Double outstandingDebt) { this.outstandingDebt = outstandingDebt; }
 
     private String paymentStatus;
 
