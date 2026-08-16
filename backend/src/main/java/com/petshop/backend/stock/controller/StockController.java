@@ -4,6 +4,8 @@ import com.petshop.backend.stock.dto.StockResponse;
 import com.petshop.backend.stock.service.StockService;
 import org.springframework.web.bind.annotation.*;
 import com.petshop.backend.stock.dto.StockAdjustmentRequest;
+import com.petshop.backend.stock.dto.StockAdjustmentResponse;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -30,12 +32,17 @@ public class StockController {
     @PostMapping("/adjust")
 public StockResponse adjustStock(
 
-        @RequestBody StockAdjustmentRequest request
+        @Valid @RequestBody StockAdjustmentRequest request
 
 ) {
 
     return stockService.adjustStock(request);
 
 }
+
+    @GetMapping("/adjustments")
+    public List<StockAdjustmentResponse> getRecentAdjustments() {
+        return stockService.getRecentAdjustments();
+    }
 
 }

@@ -181,11 +181,17 @@ export default function Products() {
 
                             <th className="text-left p-4 font-bold text-slate-700">
 
-                                Quantity
+                                Margin
 
                             </th>
 
-                            <th className="text-center p-4 font-bold text-slate-700">
+                            <th className="text-left p-4 font-bold text-slate-700">
+
+                                Stock Status
+
+                            </th>
+
+                            <th className="text-left p-4 font-bold text-slate-700">
 
                                 Actions
 
@@ -238,35 +244,23 @@ export default function Products() {
 
                                     </td>
 
+                                    <td className="p-4 text-slate-900 font-semibold">
+
+                                        {product.sellingPrice > 0
+                                            ? `${(((product.sellingPrice - product.buyingPrice) / product.sellingPrice) * 100).toFixed(1)}%`
+                                            : "-"}
+
+                                    </td>
+
                                     <td className="p-4">
 
-                                        {
-
-                                            product.quantity === 0 ?
-
-                                                <span className="badge badge-danger">
-                                                    Out of Stock
-                                                </span>
-
-                                                :
-
-                                                product.quantity <= 10 ?
-
-                                                    <span className="badge badge-warning">
-
-                                                        {product.quantity} (Low)
-
-                                                    </span>
-
-                                                    :
-
-                                                    <span className="badge badge-success">
-
-                                                        {product.quantity}
-
-                                                    </span>
-
-                                        }
+                                        {product.quantity === 0 ? (
+                                            <span className="badge badge-danger">Out of stock</span>
+                                        ) : product.quantity <= 10 ? (
+                                            <span className="badge badge-warning">Low stock</span>
+                                        ) : (
+                                            <span className="badge badge-success">In stock</span>
+                                        )}
 
                                     </td>
 

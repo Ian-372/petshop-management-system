@@ -4,17 +4,24 @@ import com.petshop.backend.product.entity.Product;
 import com.petshop.backend.product.repository.ProductRepository;
 import com.petshop.backend.stock.dto.StockAdjustmentRequest;
 import com.petshop.backend.stock.dto.StockResponse;
+import com.petshop.backend.stock.dto.StockAdjustmentResponse;
+import com.petshop.backend.stock.entity.StockAdjustment;
+import com.petshop.backend.stock.repository.StockAdjustmentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class StockServiceImpl implements StockService {
 
     private final ProductRepository productRepository;
+    private final StockAdjustmentRepository stockAdjustmentRepository;
 
-    public StockServiceImpl(ProductRepository productRepository) {
+    public StockServiceImpl(ProductRepository productRepository, StockAdjustmentRepository stockAdjustmentRepository) {
         this.productRepository = productRepository;
+        this.stockAdjustmentRepository = stockAdjustmentRepository;
     }
 
     @Override
@@ -45,6 +52,8 @@ public class StockServiceImpl implements StockService {
 
                 .orElseThrow(() -> new RuntimeException("Product not found."));
 
+        int quantityBefore = product.getQuantity();
+
         if (request.getAdjustmentType().equalsIgnoreCase("IN")) {
 
             product.setQuantity(
@@ -71,8 +80,26 @@ public class StockServiceImpl implements StockService {
 
         productRepository.save(product);
 
+        StockAdjustment adjustment = new StockAdjustment();
+        adjustment.setProduct(product);
+        adjustment.setAdjustmentType(request.getAdjustmentType().toUpperCase());
+        adjustment.setQuantity(request.getQuantity());
+        adjustment.setQuantityBefore(quantityBefore);
+        adjustment.setQuantityAfter(product.getQuantity());
+        adjustment.setReason(request.getReason().trim());
+        adjustment.setAdjustedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        adjustment.setAdjustmentDate(LocalDateTime.now());
+        stockAdjustmentRepository.save(adjustment);
+
         return mapToResponse(product);
 
+    }
+
+    @Override
+    public List<StockAdjustmentResponse> getRecentAdjustments() {
+        return stockAdjustmentRepository.findTop20ByOrderByAdjustmentDateDesc().stream()
+                .map(item -> new StockAdjustmentResponse(item.getId(), item.getProduct().getId(), item.getProduct().getName(), item.getAdjustmentType(), item.getQuantity(), item.getQuantityBefore(), item.getQuantityAfter(), item.getReason(), item.getAdjustedBy(), item.getAdjustmentDate()))
+                .toList();
     }
 
     private StockResponse mapToResponse(Product product) {
