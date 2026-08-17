@@ -7,6 +7,7 @@ import com.petshop.backend.report.dto.SalesTransactionItemResponse;
 import com.petshop.backend.report.dto.SalesTransactionResponse;
 import com.petshop.backend.sale.entity.Sale;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
 import com.petshop.backend.report.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +60,9 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SalesTransactionResponse> getSalesTransactions() {
-        return reportRepository.findAllByOrderBySaleDateDesc().stream()
+    public List<SalesTransactionResponse> getSalesTransactions(int limit) {
+        int safeLimit = Math.min(Math.max(limit, 1), 500);
+        return reportRepository.findAllByOrderBySaleDateDesc(PageRequest.of(0, safeLimit)).stream()
                 .map(this::toTransactionResponse)
                 .toList();
     }

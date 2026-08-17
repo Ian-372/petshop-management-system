@@ -15,5 +15,5 @@ public interface ReportService {
 
     List<ProductSalesResponse> getTopSellingProducts();
 
-    List<SalesTransactionResponse> getSalesTransactions();
+    List<SalesTransactionResponse> getSalesTransactions(int limit);
 }

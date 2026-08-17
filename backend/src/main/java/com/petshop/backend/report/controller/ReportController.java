@@ -7,6 +7,7 @@ import com.petshop.backend.report.dto.SalesTransactionResponse;
 import com.petshop.backend.report.service.ReportService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,7 +38,8 @@ public class ReportController {
     }
 
     @GetMapping("/transactions")
-    public List<SalesTransactionResponse> getSalesTransactions() {
-        return reportService.getSalesTransactions();
+    public List<SalesTransactionResponse> getSalesTransactions(
+            @RequestParam(defaultValue = "100") int limit) {
+        return reportService.getSalesTransactions(limit);
     }
 }
