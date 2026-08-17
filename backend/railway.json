@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "./mvnw -DskipTests package"
+    "buildCommand": "chmod +x mvnw && ./mvnw -DskipTests package"
   },
   "deploy": {
     "startCommand": "java -XX:MaxRAMPercentage=65 -XX:InitialRAMPercentage=25 -Djava.security.egd=file:/dev/./urandom -jar target/backend-0.0.1-SNAPSHOT.jar",
