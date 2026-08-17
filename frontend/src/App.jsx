@@ -7,6 +7,9 @@ import SalesActivityToast from "./components/SalesActivityToast";
 import DebtAlertToast from "./components/DebtAlertToast";
 
 export default function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        () => Boolean(localStorage.getItem("token"))
+    );
     const [stockAlerts, setStockAlerts] = useState([]);
     const [appSettings, setAppSettings] = useState(null);
     const [salesNotifications, setSalesNotifications] = useState([]);
@@ -14,6 +17,24 @@ export default function App() {
     const [dismissedDebtAlertIds, setDismissedDebtAlertIds] = useState([]);
 
     useEffect(() => {
+        const syncAuthentication = () => {
+            setIsAuthenticated(Boolean(localStorage.getItem("token")));
+        };
+
+        window.addEventListener("petshop-auth-changed", syncAuthentication);
+        window.addEventListener("storage", syncAuthentication);
+
+        return () => {
+            window.removeEventListener("petshop-auth-changed", syncAuthentication);
+            window.removeEventListener("storage", syncAuthentication);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            return undefined;
+        }
+
         let cancelled = false;
 
         async function loadSettings() {
@@ -42,9 +63,13 @@ export default function App() {
             clearInterval(settingsTimer);
             window.removeEventListener("petshop-settings-changed", handleSettingsChange);
         };
-    }, []);
+    }, [isAuthenticated]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            return undefined;
+        }
+
         let cancelled = false;
 
         async function loadAlerts() {
@@ -83,9 +108,13 @@ export default function App() {
             cancelled = true;
             clearInterval(timer);
         };
-    }, [appSettings]);
+    }, [appSettings, isAuthenticated]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            return undefined;
+        }
+
         let cancelled = false;
         let knownSaleIds = null;
 
@@ -127,9 +156,13 @@ export default function App() {
             cancelled = true;
             clearInterval(timer);
         };
-    }, [appSettings?.salesNotifications]);
+    }, [appSettings?.salesNotifications, isAuthenticated]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            return undefined;
+        }
+
         let cancelled = false;
         async function loadDebtAlerts() {
             if (appSettings?.debtAlerts === false) { setDebtAlerts([]); return; }
@@ -148,7 +181,7 @@ export default function App() {
         loadDebtAlerts();
         const timer = setInterval(loadDebtAlerts, 60000);
         return () => { cancelled = true; clearInterval(timer); };
-    }, [appSettings?.debtAlerts]);
+    }, [appSettings?.debtAlerts, isAuthenticated]);
 
     const visibleAlerts = useMemo(
         () => (appSettings?.lowStockAlerts === false ? [] : stockAlerts.filter((item) => item.quantity <= 10 && item.quantity >= 0)),

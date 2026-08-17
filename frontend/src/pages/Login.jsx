@@ -33,12 +33,19 @@ export default function Login() {
 
             localStorage.removeItem("token");
             localStorage.setItem("token", response.data.token);
+            window.dispatchEvent(new Event("petshop-auth-changed"));
 
             navigate("/");
 
         } catch (err) {
 
-            setError("Invalid username or password.");
+            if (!err.response) {
+                setError("Cannot reach the local backend. Start it on port 8080 and try again.");
+            } else if (err.response.status === 401) {
+                setError("Invalid username or password.");
+            } else {
+                setError(err.response.data?.message || "Sign-in failed. Please try again.");
+            }
 
         }
 
