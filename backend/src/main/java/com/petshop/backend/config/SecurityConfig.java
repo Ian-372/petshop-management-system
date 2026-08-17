@@ -1,10 +1,14 @@
 package com.petshop.backend.config;
 
 import com.petshop.backend.security.filter.JwtAuthenticationFilter;
+import com.petshop.backend.common.exception.ApiError;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,17 +22,21 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.time.Instant;
 
 @Configuration
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final List<String> allowedOrigins;
+    private final ObjectMapper objectMapper;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
+                          @Value("${app.cors.allowed-origins}") List<String> allowedOrigins,
+                          ObjectMapper objectMapper) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.allowedOrigins = allowedOrigins;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -82,7 +90,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/payments/callback",
-                                "/api/receipts/**"
+                                "/api/receipts/**",
+                                "/actuator/health/**"
                         ).permitAll()
 
                         // Static resources
@@ -101,8 +110,23 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                writeError(response, HttpStatus.UNAUTHORIZED, "Authentication is required.", request.getRequestURI()))
+                        .accessDeniedHandler((request, response, exception) ->
+                                writeError(response, HttpStatus.FORBIDDEN, "You do not have permission to perform this action.", request.getRequestURI())));
 
         return http.build();
+    }
+
+    private void writeError(jakarta.servlet.http.HttpServletResponse response,
+                            HttpStatus status,
+                            String message,
+                            String path) throws java.io.IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        objectMapper.writeValue(response.getOutputStream(),
+                new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message, path, null));
     }
 }
