@@ -1,10 +1,13 @@
-
 import axios from "axios";
 
 const api = axios.create({
-    // Defaults to the local backend. Set VITE_API_URL to the deployed API URL,
-    // for example: VITE_API_URL=https://api.example.com/api
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
+    // Local backend by default.
+    // For Railway, set VITE_API_URL in the frontend .env file:
+    // VITE_API_URL=https://petshop-management-system-production.up.railway.app/api
+    baseURL:
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:8080/api",
+
     headers: {
         "Content-Type": "application/json",
     },
@@ -13,51 +16,58 @@ const api = axios.create({
 // ===========================
 // Attach JWT to every request
 // ===========================
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token");
 
-    const token = localStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-});
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
 // ===========================
 // Handle authentication errors
 // ===========================
 api.interceptors.response.use(
-
     (response) => response,
 
     (error) => {
 
-        
-       //  Only redirect to login when the authentication token is actually invalid or expired
-    
-        if (error.response && error.response.status === 401) {
+        /*
+         * A 401 from the login endpoint means the username/password
+         * is incorrect. Do NOT redirect the login page to itself.
+         *
+         * A 401 from any protected page means the stored JWT is
+         * invalid/expired, so clear it and send the user to login.
+         */
+        if (error.response?.status === 401) {
 
-            console.log(
-                "Session expired or authentication failed. Redirecting to login..."
-            );
+            const isLoginPage =
+                window.location.pathname === "/login";
 
-            localStorage.removeItem("token");
-            window.dispatchEvent(new Event("petshop-auth-changed"));
+            if (!isLoginPage) {
 
-            // The login page itself deliberately receives 401 for an invalid
-            // username/password. Redirecting from /login to /login caused a
-            // document reload loop that made the form unusable.
-            if (window.location.pathname !== "/login") {
+                console.log(
+                    "Session expired or authentication failed. Redirecting to login..."
+                );
+
+                localStorage.removeItem("token");
+
+                window.dispatchEvent(
+                    new Event("petshop-auth-changed")
+                );
+
                 window.location.replace("/login");
             }
         }
 
-        //display page/content specific error message
+        // Let the individual page/login form handle the error message.
         return Promise.reject(error);
     }
-
 );
 
 export default api;
-
