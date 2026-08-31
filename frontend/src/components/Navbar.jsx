@@ -5,33 +5,33 @@ export default function Navbar() {
     const navigate = useNavigate();
 
     return (
-        <header className="h-20 bg-white border-b border-slate-100 px-8 transition-smooth">
-            <div className="h-full flex items-center justify-end">
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2 shadow-sm">
-                    <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-smooth">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
-                            <FaUserCircle className="text-lg" />
+        <header className="h-16 border-b border-slate-100 bg-white/90 backdrop-blur-sm px-4 transition-smooth sm:h-20 sm:px-6 lg:px-8">
+            <div className="flex h-full items-center justify-end">
+                <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 px-2.5 py-2 shadow-sm sm:gap-4 sm:px-3">
+                    <div className="flex cursor-pointer items-center gap-2 transition-smooth hover:opacity-80 sm:gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md sm:h-10 sm:w-10">
+                            <FaUserCircle className="text-base sm:text-lg" />
                         </div>
-                        <div className="text-left">
-                            <p className="font-semibold text-slate-900 text-sm leading-tight">
+                        <div className="hidden text-left sm:block">
+                            <p className="text-sm font-semibold leading-tight text-slate-900">
                                 Administrator
                             </p>
-                            <p className="text-xs text-slate-500 leading-tight">
+                            <p className="text-xs leading-tight text-slate-500">
                                 System Admin
                             </p>
                         </div>
                     </div>
 
-                    <div className="h-8 w-px bg-slate-200" />
+                    <div className="hidden h-8 w-px bg-slate-200 sm:block" />
 
                     <button
                         type="button"
                         onClick={() => navigate("/settings")}
-                        className="flex items-center justify-center h-10 w-10 rounded-xl text-slate-600 hover:text-blue-600 transition-smooth hover:bg-slate-100 border border-transparent hover:border-slate-200"
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-slate-600 transition-smooth hover:border-slate-200 hover:bg-slate-100 hover:text-blue-600 sm:h-10 sm:w-10"
                         aria-label="Go to settings"
                         title="Settings"
                     >
-                        <FaCog className="text-lg" />
+                        <FaCog className="text-base sm:text-lg" />
                     </button>
                 </div>
             </div>

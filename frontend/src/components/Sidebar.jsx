@@ -22,64 +22,91 @@ const menuItems = [
 export default function Sidebar() {
 
     return (
+        <>
+            <aside className="hidden min-h-screen w-64 flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-100 transition-smooth lg:flex">
 
-        <aside className="w-64 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-100 min-h-screen flex flex-col transition-smooth">
-
-            {/* Logo Section */}
-            <div className="p-6 border-b border-slate-700/50">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg">
-                        P
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-white">PetShop</h1>
-                        <p className="text-xs text-slate-400">Management System</p>
+                {/* Logo Section */}
+                <div className="border-b border-slate-700/50 p-6">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 font-bold text-white shadow-lg">
+                            P
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-bold text-white">PetShop</h1>
+                            <p className="text-xs text-slate-400">Management System</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Navigation */}
-            <nav className="mt-6 flex-1 px-3">
-                {
-                    menuItems.map((item) => (
+                {/* Navigation */}
+                <nav className="mt-6 flex-1 px-3">
+                    {
+                        menuItems.map((item) => (
+                            <NavLink
+                                key={item.name}
+                                to={item.path}
+                                className={({ isActive }) =>
+                                    `group relative mb-1 flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-300 ${
+                                        isActive
+                                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                                            : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                                    }`
+                                }
+                            >
+                                {({ isActive }) => (
+                                    <>
+                                        {isActive && (
+                                            <div className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-white"></div>
+                                        )}
+                                        <span className={`text-lg transition-transform ${isActive ? "scale-110" : "group-hover:scale-110"}`}>
+                                            {item.icon}
+                                        </span>
+                                        <span className="text-sm font-medium">
+                                            {item.name}
+                                        </span>
+                                    </>
+                                )}
+                            </NavLink>
+                        ))
+                    }
+                </nav>
+
+                {/* Footer */}
+                <div className="border-t border-slate-700/50 p-4">
+                    <p className="text-center text-xs text-slate-500">
+                        © 2026 PetShop Management
+                    </p>
+                </div>
+
+            </aside>
+
+            <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-700/60 bg-slate-950/95 px-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 shadow-[0_-10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl lg:hidden">
+                <div className="mx-auto flex w-full max-w-xl items-center gap-1 overflow-x-auto">
+                    {menuItems.map((item) => (
                         <NavLink
                             key={item.name}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex items-center gap-4 px-4 py-3 rounded-xl mb-1 transition-all duration-300 relative group ${
+                                `flex min-w-[68px] flex-1 flex-col items-center justify-center rounded-2xl px-2 py-2 text-[10px] font-medium transition-all duration-200 ${
                                     isActive
-                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                                        : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
                                 }`
                             }
                         >
                             {({ isActive }) => (
                                 <>
-                                    {isActive && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full"></div>
-                                    )}
-                                    <span className={`text-lg transition-transform ${isActive ? "scale-110" : "group-hover:scale-110"}`}>
+                                    <span className={`mb-1 text-base ${isActive ? "scale-110" : ""}`}>
                                         {item.icon}
                                     </span>
-                                    <span className="font-medium text-sm">
-                                        {item.name}
-                                    </span>
+                                    <span>{item.name}</span>
                                 </>
                             )}
                         </NavLink>
-                    ))
-                }
+                    ))}
+                </div>
             </nav>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-slate-700/50">
-                <p className="text-xs text-slate-500 text-center">
-                    © 2026 PetShop Management
-                </p>
-            </div>
-
-        </aside>
-
+        </>
     );
 
 }

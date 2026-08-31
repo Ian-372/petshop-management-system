@@ -6,27 +6,31 @@ export default function MainLayout() {
 
     return (
 
-        <div className="flex min-h-screen bg-slate-100">
+        <div className="min-h-screen bg-slate-100">
 
-            {/* Sidebar */}
+            <div className="flex min-h-screen flex-col lg:flex-row">
 
-            <Sidebar />
+                {/* Sidebar */}
 
-            {/* Main Content */}
+                <Sidebar />
 
-            <div className="flex-1 flex flex-col">
+                {/* Main Content */}
 
-                {/* Navbar */}
+                <div className="flex flex-1 min-w-0 flex-col">
 
-                <Navbar />
+                    {/* Navbar */}
 
-                {/* Page */}
+                    <Navbar />
 
-                <main className="flex-1 p-8 overflow-auto">
+                    {/* Page */}
 
-                    <Outlet />
+                    <main className="flex-1 overflow-auto p-4 pb-28 sm:p-6 lg:p-8 lg:pb-8">
 
-                </main>
+                        <Outlet />
+
+                    </main>
+
+                </div>
 
             </div>
 
