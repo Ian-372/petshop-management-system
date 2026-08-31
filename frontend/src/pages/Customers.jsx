@@ -97,10 +97,10 @@ export default function Customers() {
 
         <div className="space-y-8 pb-8">
             {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
                 <div>
-                    <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                    <h1 className="mb-1 text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">
                         Customers
                     </h1>
                     <p className="text-slate-500 text-sm">
@@ -109,6 +109,7 @@ export default function Customers() {
                 </div>
 
                 <PrimaryButton
+                    className="w-full sm:w-auto"
                     onClick={() => {
 
                         setSelectedCustomer(null);
@@ -134,9 +135,9 @@ export default function Customers() {
 
             />
 
-            <div className="card overflow-hidden">
+            <div className="card overflow-x-auto">
 
-                <table className="w-full">
+                <table className="w-full min-w-[920px]">
 
                     <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 

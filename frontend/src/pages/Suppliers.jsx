@@ -131,9 +131,9 @@ export default function Suppliers() {
 
                 </PageHeader>
 
-                <div className="bg-white rounded-xl shadow overflow-hidden">
+                <div className="overflow-x-auto rounded-lg bg-white shadow">
 
-                    <table className="w-full">
+                    <table className="w-full min-w-[680px]">
 
                         <thead className="bg-slate-100">
 

@@ -110,7 +110,7 @@ export default function Products() {
 
                     />
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
 
                         <SecondaryButton
 
@@ -144,9 +144,9 @@ export default function Products() {
 
             </PageHeader>
 
-            <div className="card overflow-hidden">
+            <div className="card overflow-x-auto">
 
-                <table className="w-full">
+                <table className="w-full min-w-[920px]">
 
                     <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
 

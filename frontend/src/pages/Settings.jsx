@@ -107,20 +107,20 @@ export default function Settings() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-8 pb-12 space-y-6">
+        <div className="mx-auto max-w-6xl space-y-6 pb-12 sm:p-6 lg:p-8">
             {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Admin panel</p>
-                    <h1 className="text-4xl font-bold text-slate-900 mt-2">Business Settings</h1>
+                    <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">Business Settings</h1>
                     <p className="text-slate-500 mt-1">Configure your store information, receipt details, and operational preferences.</p>
                 </div>
 
                 <button
                     type="button"
                     onClick={loadSettings}
-                    className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-700 font-medium transition-colors hover:bg-slate-50 sm:w-auto"
                 >
                     Refresh
                 </button>
@@ -133,7 +133,7 @@ export default function Settings() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <section className="card p-6">
+                <section className="card p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-xl font-bold text-slate-900">Store profile</h2>
                         <span className="badge badge-info">Live</span>
@@ -202,7 +202,7 @@ export default function Settings() {
                     </div>
                 </section>
 
-                <section className="card p-6">
+                <section className="card p-4 sm:p-6">
                     <h2 className="text-xl font-bold text-slate-900 mb-5">Receipt & tax</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -238,7 +238,7 @@ export default function Settings() {
                     </div>
                 </section>
 
-                <section className="card p-6">
+                <section className="card p-4 sm:p-6">
                     <h2 className="text-xl font-bold text-slate-900 mb-5">Operational preferences</h2>
 
                     <div className="space-y-4">

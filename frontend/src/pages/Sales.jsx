@@ -342,7 +342,7 @@ export default function Sales() {
             {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
 
             <div>
-                <h1 className="text-4xl font-bold text-slate-900 mb-1">
+                <h1 className="mb-1 text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">
                     Point of Sale
                 </h1>
                 <p className="text-slate-500 text-sm">
@@ -350,14 +350,14 @@ export default function Sales() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
 
                 {/* PRODUCTS SECTION */}
-                <div className="col-span-2 card p-6">
+                <div className="card p-4 sm:p-6 lg:col-span-2">
 
                     <div className="flex items-center gap-2 mb-6">
                         <FaBox className="text-blue-600 text-lg" />
-                        <h2 className="text-2xl font-bold text-slate-900">
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
                             Available Products
                         </h2>
                     </div>
@@ -432,11 +432,11 @@ export default function Sales() {
                 </div>
 
                 {/* CART SECTION */}
-                <div className="card-elevated p-6 flex flex-col h-fit sticky top-8">
+                <div className="card-elevated flex h-fit flex-col p-4 sm:p-6 lg:sticky lg:top-8">
 
                     <div className="flex items-center gap-2 mb-6">
                         <FaShoppingCart className="text-emerald-600 text-lg" />
-                        <h2 className="text-2xl font-bold text-slate-900">
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
 
                             Shopping Cart
 
@@ -721,7 +721,7 @@ export default function Sales() {
                     {/* TOTALS */}
                     <div className="border-t border-slate-200 pt-4 mb-6">
 
-                        <div className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-blue-100 -mx-6 px-6 py-3 rounded-lg">
+                        <div className="-mx-4 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 sm:-mx-6 sm:px-6">
 
                             <span className="font-bold text-slate-900 text-lg">Total:</span>
 
