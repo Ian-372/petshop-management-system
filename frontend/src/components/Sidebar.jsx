@@ -80,14 +80,14 @@ export default function Sidebar() {
 
             </aside>
 
-            <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-700/60 bg-slate-950/95 px-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 shadow-[0_-10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl lg:hidden">
-                <div className="mx-auto flex w-full max-w-xl items-center gap-1 overflow-x-auto">
+            <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-700/60 bg-slate-950/95 px-1 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1 shadow-[0_-10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl lg:hidden">
+                <div className="mx-auto grid w-full max-w-xl grid-cols-7 gap-1">
                     {menuItems.map((item) => (
                         <NavLink
                             key={item.name}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex min-w-[68px] flex-1 flex-col items-center justify-center rounded-2xl px-2 py-2 text-[10px] font-medium transition-all duration-200 ${
+                                    `flex min-w-0 flex-col items-center justify-center rounded-lg px-1 py-1.5 text-[9px] font-medium leading-tight transition-all duration-200 sm:px-2 sm:text-[10px] ${
                                     isActive
                                         ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                                         : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
@@ -96,7 +96,7 @@ export default function Sidebar() {
                         >
                             {({ isActive }) => (
                                 <>
-                                    <span className={`mb-1 text-base ${isActive ? "scale-110" : ""}`}>
+                                    <span className={`mb-0.5 text-sm sm:text-base ${isActive ? "scale-110" : ""}`}>
                                         {item.icon}
                                     </span>
                                     <span>{item.name}</span>

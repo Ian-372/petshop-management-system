@@ -9,12 +9,12 @@ export default function PageHeader({
 
     return (
 
-        <div className="mb-8">
+        <div className="mb-6">
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
 
                 <div>
-                    <h1 className="text-4xl font-bold text-slate-900">
+                    <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">
 
                         {title}
 
@@ -29,7 +29,7 @@ export default function PageHeader({
 
                             onClick={onButtonClick}
 
-                            className="btn-primary"
+                            className="btn-primary w-full sm:w-auto"
 
                         >
 

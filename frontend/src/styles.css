@@ -124,3 +124,25 @@
         @apply text-red-600;
     }
 }
+
+@media (max-width: 639px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .card,
+    .card-elevated {
+        border-radius: 8px;
+    }
+
+    .card > .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        min-height: 44px;
+    }
+}
