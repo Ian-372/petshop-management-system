@@ -1,12 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-    // Local backend by default.
-    // For Railway, set VITE_API_URL in the frontend .env file:
-    // VITE_API_URL=https://petshop-management-system-production.up.railway.app/api
+    // Prefer the deployed backend by default so the app does not silently fall
+    // back to a dead localhost service when the env is missing or stale.
     baseURL:
         import.meta.env.VITE_API_URL ||
-        "http://localhost:8080/api",
+        "https://petshop-management-system.ianmutuli36.workers.dev/api",
 
     headers: {
         "Content-Type": "application/json",
