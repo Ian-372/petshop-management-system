@@ -25,9 +25,9 @@ export default function DashboardCard({
 
     return (
 
-        <div className="card p-6 hover:shadow-lg group">
+        <div className="card group p-4 sm:p-5">
 
-            <div className="flex justify-between items-start">
+            <div className="flex items-start justify-between gap-3">
 
                 <div className="flex-1">
 
@@ -36,7 +36,7 @@ export default function DashboardCard({
                     </p>
 
                     <div className="flex items-baseline gap-2">
-                        <h2 className="text-4xl font-bold text-slate-900">
+                        <h2 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">
                             {typeof value === 'number' ? value.toLocaleString() : value}
                         </h2>
                     </div>
@@ -58,7 +58,7 @@ export default function DashboardCard({
 
                 </div>
 
-                <div className={`${bgColor} ${color} text-4xl p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`${bgColor} ${color} flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:w-12 sm:text-2xl`}>
                     <Icon />
                 </div>
 

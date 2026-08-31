@@ -8,7 +8,12 @@ export default {
       const backendUrl = new URL(`${url.pathname}${url.search}`, BACKEND_ORIGIN);
       const headers = new Headers(request.headers);
       headers.set("ngrok-skip-browser-warning", "1");
-      return fetch(new Request(backendUrl, { ...request, headers }));
+      return fetch(backendUrl, {
+        method: request.method,
+        headers,
+        body: request.body,
+        redirect: "manual",
+      });
     }
 
     return env.ASSETS.fetch(request);

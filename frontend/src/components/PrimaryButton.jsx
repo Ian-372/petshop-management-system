@@ -3,7 +3,8 @@ export default function PrimaryButton({
     children,
     onClick,
     type = "button",
-    disabled = false
+    disabled = false,
+    className = ""
 
 }) {
 
@@ -17,7 +18,7 @@ export default function PrimaryButton({
 
             disabled={disabled}
 
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`btn-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
 
         >
 

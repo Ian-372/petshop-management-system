@@ -219,7 +219,7 @@ export default function Dashboard() {
 
             {/* SECOND ROW */}
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
 
                 <ChartCard title="Business Overview">
 
@@ -232,73 +232,73 @@ export default function Dashboard() {
                     <div className="space-y-3">
 
                         {/* Purchase Cost */}
-                        <div className="flex justify-between items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group">
+                        <div className="group flex items-center justify-between gap-3 rounded-lg bg-slate-50 p-3 transition-colors hover:bg-slate-100 sm:p-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <FaFileInvoiceDollar className="text-blue-600" />
                                 </div>
                                 <span className="font-medium text-slate-700">Purchase Cost</span>
                             </div>
-                            <span className="font-bold text-slate-900 text-lg">
+                            <span className="shrink-0 text-base font-bold text-slate-900 sm:text-lg">
                                 KSh {(stats.purchaseCost / 1000).toFixed(0)}K
                             </span>
                         </div>
 
                         {/* Revenue */}
-                        <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors group">
+                        <div className="group flex items-center justify-between gap-3 rounded-lg bg-emerald-50 p-3 transition-colors hover:bg-emerald-100 sm:p-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <FaMoneyBillWave className="text-emerald-600" />
                                 </div>
                                 <span className="font-medium text-slate-700">Revenue</span>
                             </div>
-                            <span className="font-bold text-emerald-700 text-lg">
+                            <span className="shrink-0 text-base font-bold text-emerald-700 sm:text-lg">
                                 KSh {(stats.salesRevenue / 1000).toFixed(0)}K
                             </span>
                         </div>
 
                         {/* Profit */}
-                        <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group border-l-4 border-green-500">
+                        <div className="group flex items-center justify-between gap-3 rounded-lg border-l-4 border-green-500 bg-green-50 p-3 transition-colors hover:bg-green-100 sm:p-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <FaChartLine className="text-green-600" />
                                 </div>
                                 <span className="font-medium text-slate-700">Total Profit</span>
                             </div>
-                            <span className="font-bold text-green-700 text-lg">
+                            <span className="shrink-0 text-base font-bold text-green-700 sm:text-lg">
                                 KSh {(stats.profit / 1000).toFixed(0)}K
                             </span>
                         </div>
 
                         {/* Loyalty Customers */}
-                        <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
+                        <div className="group flex items-center justify-between gap-3 rounded-lg bg-violet-50 p-3 transition-colors hover:bg-violet-100 sm:p-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <FaStar className="text-purple-600" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100 transition-transform group-hover:scale-105">
+                                    <FaStar className="text-violet-600" />
                                 </div>
                                 <span className="font-medium text-slate-700">Loyalty Customers</span>
                             </div>
-                            <span className="font-bold text-purple-700 text-lg">
+                            <span className="shrink-0 text-base font-bold text-violet-700 sm:text-lg">
                                 {stats.loyaltyCustomers}
                             </span>
                         </div>
 
                         {/* Total Loyalty Points */}
-                        <div className="flex justify-between items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors group">
+                        <div className="group flex items-center justify-between gap-3 rounded-lg bg-indigo-50 p-3 transition-colors hover:bg-indigo-100 sm:p-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <FaStar className="text-indigo-600" />
                                 </div>
                                 <span className="font-medium text-slate-700">Total Loyalty Points</span>
                             </div>
-                            <span className="font-bold text-indigo-700 text-lg">
+                            <span className="shrink-0 text-base font-bold text-indigo-700 sm:text-lg">
                                 {stats.totalLoyaltyPoints}
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
                             {/* Low Stock Products */}
-                            <div className="flex justify-between items-center p-4 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors group border-l-4 border-amber-500">
+                            <div className="group flex items-center justify-between gap-2 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 transition-colors hover:bg-amber-100 sm:p-4">
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 bg-amber-100 rounded flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <FaExclamationTriangle className="text-amber-600 text-xs" />
@@ -311,7 +311,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Out Of Stock Products */}
-                            <div className="flex justify-between items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group border-l-4 border-red-500">
+                            <div className="group flex items-center justify-between gap-2 rounded-lg border-l-4 border-red-500 bg-red-50 p-3 transition-colors hover:bg-red-100 sm:p-4">
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <FaTimesCircle className="text-red-600 text-xs" />
