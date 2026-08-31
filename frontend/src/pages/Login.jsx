@@ -39,7 +39,7 @@ export default function Login() {
 
         } catch (err) {
 
-            if (!err.response) {
+            if (!err.response || err.response.status === 502) {
                 setError("Cannot reach the local backend. Start it on port 8080 and try again.");
             } else if (err.response.status === 401) {
                 setError("Invalid username or password.");
