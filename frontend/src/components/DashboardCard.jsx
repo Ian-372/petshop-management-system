@@ -12,14 +12,14 @@ export default function DashboardCard({
 
     // Color mapping for icon backgrounds
     const colorBgMap = {
-        "text-blue-600": "bg-blue-100",
-        "text-emerald-600": "bg-emerald-100",
-        "text-orange-600": "bg-orange-100",
-        "text-purple-600": "bg-purple-100",
-        "text-pink-600": "bg-pink-100",
+        "text-blue-600": "bg-cyan-400/15",
+        "text-emerald-600": "bg-emerald-400/15",
+        "text-orange-600": "bg-amber-400/15",
+        "text-purple-600": "bg-rose-400/15",
+        "text-pink-600": "bg-pink-400/15",
     };
 
-    const bgColor = colorBgMap[color] || "bg-slate-100";
+    const bgColor = colorBgMap[color] || "bg-[#263832]";
     const isTrendPositive = trend && trend > 0;
     const trendColor = isTrendPositive ? "text-emerald-600" : "text-red-600";
 
@@ -31,12 +31,12 @@ export default function DashboardCard({
 
                 <div className="flex-1">
 
-                    <p className="text-sm font-medium text-slate-500 mb-1">
+                    <p className="text-sm font-medium text-slate-400 mb-1">
                         {title}
                     </p>
 
                     <div className="flex items-baseline gap-2">
-                        <h2 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">
+                        <h2 className="break-words text-2xl font-bold text-slate-100 sm:text-3xl">
                             {typeof value === 'number' ? value.toLocaleString() : value}
                         </h2>
                     </div>

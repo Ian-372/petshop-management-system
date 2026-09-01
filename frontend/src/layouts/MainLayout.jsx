@@ -6,7 +6,7 @@ export default function MainLayout() {
 
     return (
 
-        <div className="min-h-screen bg-slate-100">
+        <div className="app-shell min-h-screen">
 
             <div className="flex min-h-screen flex-col lg:flex-row">
 
@@ -24,7 +24,7 @@ export default function MainLayout() {
 
                     {/* Page */}
 
-                    <main className="flex-1 overflow-auto p-4 pb-28 sm:p-6 lg:p-8 lg:pb-8">
+                    <main className="app-main flex-1 overflow-auto p-4 pb-28 sm:p-6 lg:p-8 lg:pb-8">
 
                         <Outlet />
 
