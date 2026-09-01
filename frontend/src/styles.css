@@ -9,20 +9,20 @@
         --color-secondary: #14b8a6;
         --color-secondary-dark: #0f766e;
         --color-accent: #fb7185;
-        --color-sidebar: #101917;
-        --color-sidebar-hover: #1c2b27;
-        --color-text-primary: #17231f;
-        --color-text-secondary: #527063;
-        --color-text-tertiary: #789186;
-        --color-bg-primary: #edf4f0;
-        --color-bg-secondary: #f7faf8;
-        --color-bg-tertiary: #dce9e3;
-        --color-border: #c9d9d2;
-        --color-border-light: #dce9e3;
+        --color-sidebar: #102a43;
+        --color-sidebar-hover: #1b3d5c;
+        --color-text-primary: #102a43;
+        --color-text-secondary: #526d82;
+        --color-text-tertiary: #7c92a5;
+        --color-bg-primary: #eef5fa;
+        --color-bg-secondary: #f8fbfd;
+        --color-bg-tertiary: #dce9f2;
+        --color-border: #c8d9e6;
+        --color-border-light: #dce9f2;
     }
 
     body {
-        @apply bg-[#edf4f0] text-slate-900;
+        @apply bg-[#eef5fa] text-slate-900;
         font-feature-settings: "kern";
     }
 
@@ -57,20 +57,20 @@
 
     /* Card base styles */
     .card {
-        @apply rounded-lg border border-[#c9d9d2] bg-white shadow-sm shadow-emerald-950/5 transition-all duration-200 hover:border-amber-400/70 hover:shadow-lg hover:shadow-emerald-950/10;
+        @apply rounded-lg border border-[#c8d9e6] bg-white shadow-sm shadow-blue-950/5 transition-all duration-200 hover:border-amber-400/70 hover:shadow-lg hover:shadow-blue-950/10;
     }
 
     .card-elevated {
-        @apply rounded-lg border border-[#c9d9d2] bg-white shadow-lg shadow-emerald-950/10;
+        @apply rounded-lg border border-[#c8d9e6] bg-white shadow-lg shadow-blue-950/10;
     }
 
     /* Button base styles */
     .btn-primary {
-        @apply rounded-lg bg-amber-500 px-5 py-2.5 font-medium text-[#17231f] shadow-sm shadow-amber-950/30 transition-all duration-200 hover:bg-amber-400 hover:shadow-md active:scale-95;
+        @apply rounded-lg bg-amber-500 px-5 py-2.5 font-medium text-[#102a43] shadow-sm shadow-amber-950/30 transition-all duration-200 hover:bg-amber-400 hover:shadow-md active:scale-95;
     }
 
     .btn-secondary {
-        @apply rounded-lg bg-[#dce9e3] px-5 py-2.5 font-medium text-[#17231f] transition-all duration-200 hover:bg-[#c9d9d2] active:scale-95;
+        @apply rounded-lg bg-[#dce9f2] px-5 py-2.5 font-medium text-[#102a43] transition-all duration-200 hover:bg-[#c8d9e6] active:scale-95;
     }
 
     .btn-ghost {
@@ -118,25 +118,25 @@
 }
 
 .app-shell {
-    background-color: #edf4f0;
+    background-color: #eef5fa;
 }
 
 .app-main {
-    color: #17231f;
+    color: #102a43;
 }
 
 .app-main .text-slate-900 {
-    color: #17231f;
+    color: #102a43;
 }
 
 .app-main .text-slate-700,
 .app-main .text-slate-600,
 .app-main .text-slate-500 {
-    color: #527063;
+    color: #526d82;
 }
 
 .app-main .text-slate-400 {
-    color: #789186;
+    color: #7c92a5;
 }
 
 .app-main .bg-white,
@@ -149,15 +149,15 @@
 .app-main .border-slate-200,
 .app-main .divide-slate-100,
 .app-main .divide-slate-200 {
-    border-color: #d5e2dc;
+    border-color: #d7e4ed;
 }
 
 .app-main input:not([type="checkbox"]),
 .app-main select,
 .app-main textarea {
-    background-color: #f7faf8;
-    border-color: #c9d9d2;
-    color: #17231f;
+    background-color: #f8fbfd;
+    border-color: #c8d9e6;
+    color: #102a43;
 }
 
 .app-main input:not([type="checkbox"]):focus,
