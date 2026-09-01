@@ -119,8 +119,6 @@
 
 .app-shell {
     background-color: #edf4f0;
-    background-image: linear-gradient(rgba(39, 79, 64, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(39, 79, 64, 0.055) 1px, transparent 1px);
-    background-size: 32px 32px;
 }
 
 .app-main {
