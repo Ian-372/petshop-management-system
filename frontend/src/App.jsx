@@ -15,10 +15,15 @@ export default function App() {
     const [salesNotifications, setSalesNotifications] = useState([]);
     const [debtAlerts, setDebtAlerts] = useState([]);
     const [dismissedDebtAlertIds, setDismissedDebtAlertIds] = useState([]);
+    const [loginSuccess, setLoginSuccess] = useState(false);
 
     useEffect(() => {
-        const syncAuthentication = () => {
+        const syncAuthentication = (event) => {
             setIsAuthenticated(Boolean(localStorage.getItem("token")));
+
+            if (event.detail?.type === "login") {
+                setLoginSuccess(true);
+            }
         };
 
         window.addEventListener("petshop-auth-changed", syncAuthentication);
@@ -29,6 +34,15 @@ export default function App() {
             window.removeEventListener("storage", syncAuthentication);
         };
     }, []);
+
+    useEffect(() => {
+        if (!loginSuccess) {
+            return undefined;
+        }
+
+        const timer = setTimeout(() => setLoginSuccess(false), 3000);
+        return () => clearTimeout(timer);
+    }, [loginSuccess]);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -195,6 +209,11 @@ export default function App() {
     return (
         <>
             <AppRouter />
+            {loginSuccess && (
+                <div className="fixed top-5 right-5 z-50 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 shadow-lg">
+                    Signed in successfully.
+                </div>
+            )}
             <StockAlertToast notifications={visibleAlerts} onClose={dismissAlert} />
             <SalesActivityToast
                 notifications={salesNotifications}

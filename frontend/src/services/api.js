@@ -43,25 +43,20 @@ api.interceptors.response.use(
          * A 401 from any protected page means the stored JWT is
          * invalid/expired, so clear it and send the user to login.
          */
-        if (error.response?.status === 401) {
+        const status = error.response?.status;
+        const isAuthenticationRequest =
+            error.config?.url?.includes("/auth/");
+        const hasToken = Boolean(localStorage.getItem("token"));
 
-            const isLoginPage =
-                window.location.pathname === "/login";
+        if ((status === 401 || status === 403) && hasToken && !isAuthenticationRequest) {
 
-            if (!isLoginPage) {
+            localStorage.removeItem("token");
 
-                console.log(
-                    "Session expired or authentication failed. Redirecting to login..."
-                );
+            window.dispatchEvent(
+                new Event("petshop-auth-changed")
+            );
 
-                localStorage.removeItem("token");
-
-                window.dispatchEvent(
-                    new Event("petshop-auth-changed")
-                );
-
-                window.location.replace("/login");
-            }
+            window.location.replace("/login?reason=session-expired");
         }
 
         // Let the individual page/login form handle the error message.

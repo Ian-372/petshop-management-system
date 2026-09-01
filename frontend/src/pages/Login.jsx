@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import { FaLock } from "react-icons/fa";
 
 export default function Login() {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -33,7 +34,9 @@ export default function Login() {
 
             localStorage.removeItem("token");
             localStorage.setItem("token", response.data.token);
-            window.dispatchEvent(new Event("petshop-auth-changed"));
+            window.dispatchEvent(new CustomEvent("petshop-auth-changed", {
+                detail: { type: "login" }
+            }));
 
             navigate("/");
 
@@ -118,6 +121,15 @@ export default function Login() {
                         <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
                             <p className="text-red-200 text-sm font-medium">
                                 {error}
+                            </p>
+                        </div>
+                    }
+
+                    {
+                        searchParams.get("reason") === "session-expired" &&
+                        <div className="mt-4 p-3 bg-amber-500/20 border border-amber-500/30 rounded-lg">
+                            <p className="text-amber-100 text-sm font-medium">
+                                Your session expired. Please sign in again.
                             </p>
                         </div>
                     }
