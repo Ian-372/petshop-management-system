@@ -11,18 +11,18 @@
         --color-accent: #fb7185;
         --color-sidebar: #101917;
         --color-sidebar-hover: #1c2b27;
-        --color-text-primary: #f8fafc;
-        --color-text-secondary: #a8c0b7;
-        --color-text-tertiary: #6f8880;
-        --color-bg-primary: #101716;
-        --color-bg-secondary: #16211e;
-        --color-bg-tertiary: #20312c;
-        --color-border: #31443d;
-        --color-border-light: #263832;
+        --color-text-primary: #17231f;
+        --color-text-secondary: #527063;
+        --color-text-tertiary: #789186;
+        --color-bg-primary: #edf4f0;
+        --color-bg-secondary: #f7faf8;
+        --color-bg-tertiary: #dce9e3;
+        --color-border: #c9d9d2;
+        --color-border-light: #dce9e3;
     }
 
     body {
-        @apply bg-[#101716] text-slate-100;
+        @apply bg-[#edf4f0] text-slate-900;
         font-feature-settings: "kern";
     }
 
@@ -57,11 +57,11 @@
 
     /* Card base styles */
     .card {
-        @apply rounded-lg border border-[#31443d] bg-[#17231f] shadow-sm shadow-black/20 transition-all duration-200 hover:border-amber-400/60 hover:shadow-lg hover:shadow-black/30;
+        @apply rounded-lg border border-[#c9d9d2] bg-white shadow-sm shadow-emerald-950/5 transition-all duration-200 hover:border-amber-400/70 hover:shadow-lg hover:shadow-emerald-950/10;
     }
 
     .card-elevated {
-        @apply rounded-lg border border-[#31443d] bg-[#17231f] shadow-lg shadow-black/30;
+        @apply rounded-lg border border-[#c9d9d2] bg-white shadow-lg shadow-emerald-950/10;
     }
 
     /* Button base styles */
@@ -70,11 +70,11 @@
     }
 
     .btn-secondary {
-        @apply rounded-lg bg-[#263832] px-5 py-2.5 font-medium text-slate-100 transition-all duration-200 hover:bg-[#31443d] active:scale-95;
+        @apply rounded-lg bg-[#dce9e3] px-5 py-2.5 font-medium text-[#17231f] transition-all duration-200 hover:bg-[#c9d9d2] active:scale-95;
     }
 
     .btn-ghost {
-        @apply rounded-lg px-5 py-2.5 font-medium text-amber-300 transition-all duration-200 hover:bg-amber-400/10;
+        @apply rounded-lg px-5 py-2.5 font-medium text-amber-700 transition-all duration-200 hover:bg-amber-400/15;
     }
 
     .btn-danger {
@@ -118,54 +118,54 @@
 }
 
 .app-shell {
-    background-color: #101716;
-    background-image: linear-gradient(rgba(168, 192, 183, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(168, 192, 183, 0.045) 1px, transparent 1px);
+    background-color: #edf4f0;
+    background-image: linear-gradient(rgba(39, 79, 64, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(39, 79, 64, 0.055) 1px, transparent 1px);
     background-size: 32px 32px;
 }
 
 .app-main {
-    color: #e6f0eb;
+    color: #17231f;
 }
 
 .app-main .text-slate-900 {
-    color: #f8fafc;
+    color: #17231f;
 }
 
 .app-main .text-slate-700,
 .app-main .text-slate-600,
 .app-main .text-slate-500 {
-    color: #a8c0b7;
+    color: #527063;
 }
 
 .app-main .text-slate-400 {
-    color: #7f9b91;
+    color: #789186;
 }
 
 .app-main .bg-white,
 .app-main .bg-slate-50,
 .app-main .bg-slate-100 {
-    background-color: #17231f;
+    background-color: #ffffff;
 }
 
 .app-main .border-slate-100,
 .app-main .border-slate-200,
 .app-main .divide-slate-100,
 .app-main .divide-slate-200 {
-    border-color: #31443d;
+    border-color: #d5e2dc;
 }
 
 .app-main input:not([type="checkbox"]),
 .app-main select,
 .app-main textarea {
-    background-color: #101716;
-    border-color: #3b5148;
-    color: #f8fafc;
+    background-color: #f7faf8;
+    border-color: #c9d9d2;
+    color: #17231f;
 }
 
 .app-main input:not([type="checkbox"]):focus,
 .app-main select:focus,
 .app-main textarea:focus {
-    background-color: #101716;
+    background-color: #ffffff;
     border-color: #fbbf24;
 }
 

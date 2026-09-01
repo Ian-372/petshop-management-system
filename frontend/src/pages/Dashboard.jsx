@@ -205,7 +205,7 @@ export default function Dashboard() {
 
                     icon={FaMoneyBillWave}
 
-                    color="text-purple-600"
+                    color="text-rose-600"
 
                     trend={stats.revenueGrowthPercentage ?? null}
 

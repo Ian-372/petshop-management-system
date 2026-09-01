@@ -15,7 +15,7 @@ export default function DashboardCard({
         "text-blue-600": "bg-cyan-400/15",
         "text-emerald-600": "bg-emerald-400/15",
         "text-orange-600": "bg-amber-400/15",
-        "text-purple-600": "bg-rose-400/15",
+        "text-rose-600": "bg-rose-400/15",
         "text-pink-600": "bg-pink-400/15",
     };
 
@@ -36,7 +36,7 @@ export default function DashboardCard({
                     </p>
 
                     <div className="flex items-baseline gap-2">
-                        <h2 className="break-words text-2xl font-bold text-slate-100 sm:text-3xl">
+                        <h2 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">
                             {typeof value === 'number' ? value.toLocaleString() : value}
                         </h2>
                     </div>

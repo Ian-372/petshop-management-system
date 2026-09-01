@@ -11,7 +11,7 @@ export default function ChartCard({
         <div className="card p-4 sm:p-6">
 
             <div className="mb-4 sm:mb-6">
-                <h2 className="text-lg font-bold text-slate-100 sm:text-xl">
+                <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
 
                     {title}
 
