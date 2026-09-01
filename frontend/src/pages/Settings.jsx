@@ -242,80 +242,85 @@ export default function Settings() {
                     <h2 className="text-xl font-bold text-slate-900 mb-5">Operational preferences</h2>
 
                     <div className="space-y-4">
-                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div>
+                        <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="min-w-0">
                                 <p className="font-semibold text-slate-900">Auto print receipt</p>
                                 <p className="text-sm text-slate-500">Print customer receipts automatically after every successful sale.</p>
                             </div>
                             <button
                                 type="button"
+                                aria-label="Toggle automatic receipt printing"
                                 aria-pressed={settings.autoPrintReceipt}
                                 onClick={() => setSettings((prev) => ({ ...prev, autoPrintReceipt: !prev.autoPrintReceipt }))}
-                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.autoPrintReceipt ? "bg-blue-600" : "bg-slate-300"}`}
+                                className={`relative inline-flex h-11 w-14 shrink-0 self-end rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:self-auto ${settings.autoPrintReceipt ? "bg-blue-600" : "bg-slate-300"}`}
                             >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.autoPrintReceipt ? "translate-x-6" : "translate-x-1"}`} />
+                                <span className={`inline-block h-8 w-8 rounded-full bg-white shadow-sm transform transition-transform ${settings.autoPrintReceipt ? "translate-x-5" : "translate-x-1"}`} />
                             </button>
-                        </label>
+                        </div>
 
-                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div>
+                        <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="min-w-0">
                                 <p className="font-semibold text-slate-900">Low stock alerts</p>
                                 <p className="text-sm text-slate-500">Notify the admin when products drop below the safe stock level.</p>
                             </div>
                             <button
                                 type="button"
+                                aria-label="Toggle low stock alerts"
                                 aria-pressed={settings.lowStockAlerts}
                                 onClick={() => setSettings((prev) => ({ ...prev, lowStockAlerts: !prev.lowStockAlerts }))}
-                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.lowStockAlerts ? "bg-amber-500" : "bg-slate-300"}`}
+                                className={`relative inline-flex h-11 w-14 shrink-0 self-end rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:self-auto ${settings.lowStockAlerts ? "bg-amber-500" : "bg-slate-300"}`}
                             >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.lowStockAlerts ? "translate-x-6" : "translate-x-1"}`} />
+                                <span className={`inline-block h-8 w-8 rounded-full bg-white shadow-sm transform transition-transform ${settings.lowStockAlerts ? "translate-x-5" : "translate-x-1"}`} />
                             </button>
-                        </label>
+                        </div>
 
-                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div>
+                        <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="min-w-0">
                                 <p className="font-semibold text-slate-900">Confirmation before delete</p>
                                 <p className="text-sm text-slate-500">Require confirmation before deleting customers, products, and suppliers.</p>
                             </div>
                             <button
                                 type="button"
+                                aria-label="Toggle delete confirmation"
                                 aria-pressed={settings.deleteConfirmation}
                                 onClick={() => setSettings((prev) => ({ ...prev, deleteConfirmation: !prev.deleteConfirmation }))}
-                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.deleteConfirmation ? "bg-emerald-500" : "bg-slate-300"}`}
+                                className={`relative inline-flex h-11 w-14 shrink-0 self-end rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:self-auto ${settings.deleteConfirmation ? "bg-emerald-500" : "bg-slate-300"}`}
                             >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.deleteConfirmation ? "translate-x-6" : "translate-x-1"}`} />
+                                <span className={`inline-block h-8 w-8 rounded-full bg-white shadow-sm transform transition-transform ${settings.deleteConfirmation ? "translate-x-5" : "translate-x-1"}`} />
                             </button>
-                        </label>
+                        </div>
 
-                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div>
+                        <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="min-w-0">
                                 <p className="font-semibold text-slate-900">Sales notifications</p>
                                 <p className="text-sm text-slate-500">Enable sale activity and reminder updates for the admin dashboard.</p>
                             </div>
                             <button
                                 type="button"
+                                aria-label="Toggle sales notifications"
                                 aria-pressed={settings.salesNotifications}
                                 onClick={() => setSettings((prev) => ({ ...prev, salesNotifications: !prev.salesNotifications }))}
-                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.salesNotifications ? "bg-violet-500" : "bg-slate-300"}`}
+                                className={`relative inline-flex h-11 w-14 shrink-0 self-end rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:self-auto ${settings.salesNotifications ? "bg-blue-600" : "bg-slate-300"}`}
                             >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.salesNotifications ? "translate-x-6" : "translate-x-1"}`} />
+                                <span className={`inline-block h-8 w-8 rounded-full bg-white shadow-sm transform transition-transform ${settings.salesNotifications ? "translate-x-5" : "translate-x-1"}`} />
                             </button>
-                        </label>
+                        </div>
 
-                        <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div>
+                        <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="min-w-0">
                                 <p className="font-semibold text-slate-900">Debt reminder alerts</p>
                                 <p className="text-sm text-slate-500">Notify the admin about customers near the KSh 2,000 limit or carrying debt for 30 days or more.</p>
                             </div>
                             <button
                                 type="button"
+                                aria-label="Toggle debt reminder alerts"
                                 aria-pressed={settings.debtAlerts}
                                 onClick={() => setSettings((prev) => ({ ...prev, debtAlerts: !prev.debtAlerts }))}
-                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${settings.debtAlerts ? "bg-red-500" : "bg-slate-300"}`}
+                                className={`relative inline-flex h-11 w-14 shrink-0 self-end rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:self-auto ${settings.debtAlerts ? "bg-red-500" : "bg-slate-300"}`}
                             >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${settings.debtAlerts ? "translate-x-6" : "translate-x-1"}`} />
+                                <span className={`inline-block h-8 w-8 rounded-full bg-white shadow-sm transform transition-transform ${settings.debtAlerts ? "translate-x-5" : "translate-x-1"}`} />
                             </button>
-                        </label>
+                        </div>
                     </div>
                 </section>
 
