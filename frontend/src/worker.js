@@ -1,4 +1,4 @@
-const BACKEND_ORIGIN = "https://huddle-agonizing-dynamic.ngrok-free.dev";
+const BACKEND_ORIGIN = "https://petshop-management-system-production.up.railway.app";
 
 export default {
   async fetch(request, env) {
@@ -7,7 +7,6 @@ export default {
     if (url.pathname.startsWith("/api/")) {
       const backendUrl = new URL(`${url.pathname}${url.search}`, BACKEND_ORIGIN);
       const headers = new Headers(request.headers);
-      headers.set("ngrok-skip-browser-warning", "1");
       return fetch(backendUrl, {
         method: request.method,
         headers,
